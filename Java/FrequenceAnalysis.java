@@ -1,14 +1,10 @@
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class FrequenceAnalysis {
-
-	private Map<Character, Integer> map = new HashMap<Character,Integer>();
-	public FrequenceAnalysis() {
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Input the sequence:");
-		String input = sc.nextLine();
+	private  Map<Character, Integer> map = new HashMap<Character,Integer>();
+	public FrequenceAnalysis(String string) {
+		String input = string;
 		char[] characters = input.toCharArray();
 		for(char c : characters) {
 			if(map.containsKey(c)) {
@@ -19,6 +15,5 @@ public class FrequenceAnalysis {
 		}
 		System.out.println(map.keySet());
 		System.out.println(map.values());
-		sc.close();
 	}
 }
