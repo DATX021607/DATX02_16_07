@@ -9,8 +9,8 @@ public class Main {
 			try {
 				br = new BufferedReader(new FileReader(args[i]));
 			    String line = br.readLine();
-			    new FrequencyAnalysis(line);
-			    
+			    new FrequenceAnalysis(line);
+			    br.close();
 			} catch (Exception e) {
 				
 			}
