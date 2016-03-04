@@ -48,7 +48,7 @@ for i = 1:(length(pos)-1)
             Xs = [X(i) X(j)];
             Ys = [Y(i) Y(j)];
             Zs = [Z(i) Z(j)];
-
+            
             saved(i,j) = 1;
             plot3(Xs, Ys, Zs,'o');
         
@@ -56,6 +56,11 @@ for i = 1:(length(pos)-1)
        
     end
 end
+TX=transpose(X);
+TY=transpose(Y);
+TZ=transpose(Z);
+
+coords=[TX TY TZ];
 
 %plot3(X,Y,Z, '.')
 
@@ -63,4 +68,5 @@ end
 % Extract the coordinates of the Atoms matching the search criteria
 % cmap = colormap(parula(length(Z)));
 % scatter3(X,Y,Z,50, cmap)
+
 % line(X,Y,Z)
