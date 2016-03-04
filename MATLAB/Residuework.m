@@ -43,34 +43,32 @@ numberOfLists = 0;
 extraplot = [coords pos(:)];
 extraplot = sortrows(extraplot, 3);
 for x = 1:(length(extraplot))
-   xs = extraplot(x, :)
+   xs = extraplot(x, :);
    saved = 0;
    for y1 = 1:numberOfLists
        y1
-       y2 = test{y1}
-       ys = y2(size(y2, 1), :)
-       ai = [ys(1); ys(2); ys(3)]
-       aj = [xs(1); xs(2); xs(3)]
+       y2 = test{y1};
+       ys = y2(size(y2, 1), :);
+       ai = [ys(1); ys(2); ys(3)];
+       aj = [xs(1); xs(2); xs(3)];
         
        
        distance = norm(ai-aj);
        Zdiff = abs(xs(3) - ys(3))
        if(distance < 5.29)
            if(Zdiff > 3.7)
-              test{y1} = [y2; xs]
+              test{y1} = [y2; xs];
               saved = 1;
            end
        end
    end
    if(saved == 0)
-      numberOfLists = numberOfLists + 1
-      test{numberOfLists} = xs
+      numberOfLists = numberOfLists + 1;
+      test{numberOfLists} = xs;
    end
 end
 
-for x = 1:numberOfLists
-    test{x}
-end
+
 
 %plot3(X,Y,Z, '.')
 
@@ -83,32 +81,56 @@ end
 
 hold on
  
-B = linspace(0,30);
-C = linspace(25,60);
-A = 0 +(-4.8241*B)+24.9822*C;
+max1 = max(test{1}(:,1));
+max2 = max(test{2}(:,1));
+max3 = max(test{3}(:,1));
+maxtot = max([max1,max2,max3]);
+B = linspace(0, maxtot + 5);
+max1 = max(test{1}(:,2));
+max2 = max(test{2}(:,2));
+max3 = max(test{3}(:,2));
+maxtot2 = max([max1,max2,max3]);
+
+min1 = min(test{1}(:,2));
+min2 = min(test{2}(:,2));
+min3 = min(test{3}(:,2));
+mintot = min([min1,min2,min3]);
+C = linspace(mintot-5,maxtot2+10);
+coordinates = {};
+points = zeros(numberOfLists,3)
+for x = 1:numberOfLists
+    coordinates{x} = test{x}(1,:)
+    points(x,:) = coordinates{x}(1:3)
+end
+
+P1 = points(1,:)
+P2 = points(2,:)
+P3 = points(3,:)
+normal = cross(P1-P3,P1-P2)
+b1 = normal(1);
+b2 = normal(2);
+b3 = normal(3);
+
+%A = 0 +(b1*B)+b2*C;
 %plot3(B,C,A)
 hold on
 
-P1 = coords(1,:)
-P2 = coords(7,:)
-P3 = coords(13,:)
-normal = cross(P1-P2,P1-P3)
-b1 = 4.8241;
-b2 = -24.9822;
-b3 = 504.3998;
+
+
 point2 = [b1 b2 b3];
 
-points = [point2;P2];
+pointsToPlot = [point2;P2];
 
 
 b1 = b1/-b3
 b2 = b2/-b3
 
+%TODO: Make these values more general.
 Xn = linspace(0,300);
 Yn = linspace(20,600);
 Zn = b1*Xn + b2*Yn;
 hold on
-plot3(points(:,1),points(:,2), points(:,3))
+plot3(pointsToPlot(:,1),pointsToPlot(:,2), pointsToPlot(:,3))
 hold on
 
 syms x y z
