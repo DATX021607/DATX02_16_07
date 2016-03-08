@@ -21,7 +21,7 @@ pos = find(searchterm);
 search2 = [];
 for i = pos
     
-   if((strcmp({gfl.Model(1).Atom(i).resName},res_name)) == 1 && gfl.Model(1).Atom(i).resSeq == 31) 
+   if((strcmp({gfl.Model(1).Atom(i).resName},res_name)) == 1) 
        search2 = [search2 i];
    end
 end
@@ -112,15 +112,27 @@ points = zeros(numberOfLists,3)
 normals = [];
 for i = 2:size(test{1},1)-1
     P1 = test{1}(i,1:3)
-    P2 = test{2}(i,1:3)
-    P3 = test{3}(i,1:3)
+    P2 = test{3}(i,1:3)
+    P3 = test{5}(i,1:3)
     normals = [normals; cross(P1-P3, P1-P2)]; 
     zplane = CalculatePlane(P1,P2,P3)
     hold on
     ezmesh(zplane, [0,28,25,50])
 end
+normalsX = normals(:,1);
+normalsX = mean(normalsX);
+normalsY = normals(:,2);
+normalsY = mean(normalsY);
+normalsZ = normals(:,3);
+normalsZ = mean(normalsZ);
 
+normalsX
+normalsY
+normalsZ
+pointMupp = [[normalsX normalsY normalsZ]; [15,40,40]];
+plot3(pointMupp(:,1),pointMupp(:,2),pointMupp(:,3), 'Color', 'red')
 hold on
+ezmesh(zplane, [0,28,25,50])
 %plot(normal)
 hold on
 plot3(coords(:,1),coords(:,2), coords(:,3), 'o')
