@@ -108,13 +108,13 @@ points = zeros(numberOfLists,3)
 %     coordinates3{x} = test{x}(size(test{x},1)/2,:)
 %     points3(x,:) = coordinates3{x}(1:3)
     
-%end
-normals = [];
+end
+
 for i = 2:size(test{1},1)-1
     P1 = test{1}(i,1:3)
     P2 = test{2}(i,1:3)
     P3 = test{3}(i,1:3)
-    normals = [normals; cross(P1-P3, P1-P2)]; 
+    normals = [normal 
     zplane = CalculatePlane(P1,P2,P3)
     hold on
     ezmesh(zplane, [0,28,25,50])
