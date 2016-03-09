@@ -25,7 +25,7 @@ Xn = linspace(0,300);
 Yn = linspace(20,600);
 Zn = b1*Xn + b2*Yn;
 hold on
-plot3(pointsToPlot(:,1),pointsToPlot(:,2), pointsToPlot(:,3))
+%plot3(pointsToPlot(:,1),pointsToPlot(:,2), pointsToPlot(:,3))
 hold on
 
 syms x y z

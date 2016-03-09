@@ -47,7 +47,7 @@ for x = 1:(length(extraplot))
    saved = 0;
    for y1 = 1:numberOfLists
        y1
-       y2 = test{y1};
+       y2 = coordinatesArray{y1};
        ys = y2(size(y2, 1), :);
        ai = [ys(1); ys(2); ys(3)];
        aj = [xs(1); xs(2); xs(3)];
@@ -57,14 +57,14 @@ for x = 1:(length(extraplot))
        Zdiff = abs(xs(3) - ys(3))
        if(distance < 5.29)
            if(Zdiff > 3.7)
-              test{y1} = [y2; xs];
+              coordinatesArray{y1} = [y2; xs];
               saved = 1;
            end
        end
    end
    if(saved == 0)
       numberOfLists = numberOfLists + 1;
-      test{numberOfLists} = xs;
+      coordinatesArray{numberOfLists} = xs;
    end
 end
 
@@ -81,19 +81,19 @@ end
 
 hold on
  
-max1 = max(test{1}(:,1));
-max2 = max(test{2}(:,1));
-max3 = max(test{3}(:,1));
+max1 = max(coordinatesArray{1}(:,1));
+max2 = max(coordinatesArray{2}(:,1));
+max3 = max(coordinatesArray{3}(:,1));
 maxtot = max([max1,max2,max3]);
 B = linspace(0, maxtot + 5);
-max1 = max(test{1}(:,2));
-max2 = max(test{2}(:,2));
-max3 = max(test{3}(:,2));
+max1 = max(coordinatesArray{1}(:,2));
+max2 = max(coordinatesArray{2}(:,2));
+max3 = max(coordinatesArray{3}(:,2));
 maxtot2 = max([max1,max2,max3]);
 
-min1 = min(test{1}(:,2));
-min2 = min(test{2}(:,2));
-min3 = min(test{3}(:,2));
+min1 = min(coordinatesArray{1}(:,2));
+min2 = min(coordinatesArray{2}(:,2));
+min3 = min(coordinatesArray{3}(:,2));
 mintot = min([min1,min2,min3]);
 C = linspace(mintot-5,maxtot2+10);
 coordinates = {};
@@ -110,10 +110,10 @@ points = zeros(numberOfLists,3)
     
 %end
 normals = [];
-for i = 2:size(test{1},1)-1
-    P1 = test{1}(i,1:3)
-    P2 = test{3}(i,1:3)
-    P3 = test{5}(i,1:3)
+for i = 2:size(coordinatesArray{1},1)-1
+    P1 = coordinatesArray{1}(i,1:3)
+    P2 = coordinatesArray{3}(i,1:3)
+    P3 = coordinatesArray{5}(i,1:3)
     normals = [normals; cross(P1-P3, P1-P2)]; 
     zplane = CalculatePlane(P1,P2,P3)
     hold on
@@ -129,8 +129,8 @@ normalsZ = mean(normalsZ);
 normalsX
 normalsY
 normalsZ
-pointMupp = [[normalsX normalsY normalsZ]; [15,40,40]];
-plot3(pointMupp(:,1),pointMupp(:,2),pointMupp(:,3), 'Color', 'red')
+pointMeanNormal = [[normalsX normalsY normalsZ]; [15,40,40]];
+plot3(pointMeanNormal(:,1),pointMeanNormal(:,2),pointMeanNormal(:,3), 'Color', 'red')
 hold on
 ezmesh(zplane, [0,28,25,50])
 %plot(normal)
