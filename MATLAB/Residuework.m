@@ -1,22 +1,23 @@
 % gfl = pdbread('2e8d.pdb');
 %
-% atom_name = ' CA ';
-%
 % pos = find((strcmp{gfl.Model.Atom(:).AtomName},atom_name))
 %
 % X=[gfl.Model.Atom(pos).X]
 % Generate a PDB file (example from MatLab help)
 % gfl = getpdb('1GFL','TOFILE','1gfl.pdb')
 % Read the PDB file
-gfl = pdbread('2lmq.pdb');
+current_proteine = '2m4j';
+gfl = pdbread(strcat(current_proteine, '.pdb'));
 
 %% Define the Atom Name
 
 atom_name='CA';
-%
-res_name='ILE';
+res_name_axis='ILE';
+%For Aromatic Ring Calcualtion
+aromatic_res = 'PHE';
+
 %gfl.Model(1).Atom(:)
-searchterm = (strcmp({gfl.Model(1).Atom(:).resName},res_name));% & (strcmp({gfl.Model(1).Atom(:).resName},res_name))  & (strcmp(int2str(gfl.Model(1).Atom(:).resSeq),'31')));
+searchterm = (strcmp({gfl.Model(1).Atom(:).resName},res_name_axis));% & (strcmp({gfl.Model(1).Atom(:).resName},res_name))  & (strcmp(int2str(gfl.Model(1).Atom(:).resSeq),'31')));
 %ST = gfl.Model(1).Atom(:)(2) == 'CA' && gfl.Model(1).Atom(:)(4) == 'ILE' 
 % Search for the couple "Atom name"
 pos = find(searchterm);
@@ -142,11 +143,22 @@ hold on
 %plot3(coords(:,1),coords(:,2), coords(:,3), 'o')
 hold on
 axis([-250 250 -250 250 50 150])
+%-------------------------------------------------------------
 
 hold on
 result = [];
-result = [result AromaticRings('PHE', gfl, normal)];
-for i = 1:length(result)
-    result(i) = radtodeg(acos(result(i)));
-end
+%Result is Cell matrix with ChainID : Angle
+result = [result AromaticRings(aromatic_res, gfl, normal)];
+
 hold off
+%Data extracion
+% Create Table Titles
+title = ['Chain ID';'Angle   '];
+%Combines function data witl table titles
+celldata = transpose(cellstr(title));
+dataToWrite = vertcat(celldata, result);
+%Creat tabe name as protein - Residue
+tabName=strcat(current_proteine, ' - ',aromatic_res );
+%Writes Data (only works if excel is available atm)
+xlswrite('Angles',dataToWrite,tabName,'C2');
+

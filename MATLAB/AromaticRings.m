@@ -14,16 +14,21 @@ function [result] = AromaticRings (ResName, gfl, normal)
     searchterm = (strcmp({gfl.Model(1).Atom(:).resName},ResName));
     % Search for the couple "Atom name"
     pos = find(searchterm);
-    search2 = [];
+    search2  = [];
     Sequence = [];
-    CGArray = [];
+    CGArray  = [];
     CE1Array = [];
     CE2Array = [];
-    result = [];
+    ChainID  = [];
+    resultV =[];
+    result   = [];
+    Derp = [];
     for i = pos
 
        if((strcmp({gfl.Model(1).Atom(i).AtomName},atom_name)) == 1) 
            CGArray = [CGArray i];
+           %Stores ChainID for each atom extracted
+           ChainID = [ChainID gfl.Model(1).Atom(i).chainID]
        elseif((strcmp({gfl.Model(1).Atom(i).AtomName},atom_name2)) == 1) 
            CE1Array = [CE1Array i];
        elseif((strcmp({gfl.Model(1).Atom(i).AtomName},atom_name3)) == 1) 
@@ -35,7 +40,6 @@ function [result] = AromaticRings (ResName, gfl, normal)
     posCG = CGArray;
     posCE1 = CE1Array;
     posCE2 = CE2Array;
-
     for i = 1:length(CGArray)
         XCG = [gfl.Model(1).Atom(posCG(i)).X];
         YCG = [gfl.Model(1).Atom(posCG(i)).Y];
@@ -54,7 +58,14 @@ function [result] = AromaticRings (ResName, gfl, normal)
         P3Aro = [XCE2 YCE2 ZCE2];
 
         calculatedNormal = CalculateNormal(P1Aro,P2Aro,P3Aro);
-        result = [result dot(calculatedNormal, normal)/(norm(calculatedNormal)*norm(normal))]
+        resultV = [resultV dot(calculatedNormal, normal)/(norm(calculatedNormal)*norm(normal))]
+
     end
+    for i = 1:length(resultV)
+        result(i) = radtodeg(acos(resultV(i)));
+    end 
+    C1 = num2cell(transpose(result));
+    C2 = cellstr (transpose(ChainID));
+    result = horzcat(C2, C1)
 end
 
