@@ -8,8 +8,10 @@
 % Generate a PDB file (example from MatLab help)
 % gfl = getpdb('1GFL','TOFILE','1gfl.pdb')
 % Read the PDB file
-gfl = pdbread('2lmq.pdb')
+gfl = pdbread('2lmq.pdb');
+
 %% Define the Atom Name
+
 atom_name='CA';
 %
 res_name='ILE';
@@ -17,7 +19,7 @@ res_name='ILE';
 searchterm = (strcmp({gfl.Model(1).Atom(:).resName},res_name));% & (strcmp({gfl.Model(1).Atom(:).resName},res_name))  & (strcmp(int2str(gfl.Model(1).Atom(:).resSeq),'31')));
 %ST = gfl.Model(1).Atom(:)(2) == 'CA' && gfl.Model(1).Atom(:)(4) == 'ILE' 
 % Search for the couple "Atom name"
-pos = find(searchterm)
+pos = find(searchterm);
 search2 = [];
 Sequence = [];
 for i = pos
@@ -49,7 +51,7 @@ for x = 1:(length(extraplot))
    xs = extraplot(x, :);
    saved = 0;
    for y1 = 1:numberOfLists
-       y1
+       
        y2 = coordinatesArray{y1};
        ys = y2(size(y2, 1), :);
        ai = [ys(1); ys(2); ys(3)];
@@ -57,7 +59,7 @@ for x = 1:(length(extraplot))
         
        
        distance = norm(ai-aj);
-       Zdiff = abs(xs(3) - ys(3))
+       Zdiff = abs(xs(3) - ys(3));
        if(distance < 5.5)
            if(Zdiff > 3.7)
               coordinatesArray{y1} = [y2; xs];
@@ -115,13 +117,13 @@ points = zeros(numberOfLists,3)
 normals = [];
 SequenceLength = length(unique(Sequence));
 for i = 2:size(coordinatesArray{1},1)-1
-    P1 = coordinatesArray{1}(i,1:3)
-    P2 = coordinatesArray{1+SequenceLength}(i,1:3)
-    P3 = coordinatesArray{1+SequenceLength*2}(i,1:3)
+    P1 = coordinatesArray{1}(i,1:3);
+    P2 = coordinatesArray{1+SequenceLength}(i,1:3);
+    P3 = coordinatesArray{1+SequenceLength*2}(i,1:3);
     normals = [normals; cross(P1-P3, P1-P2)]; 
-    zplane = CalculatePlane(P1,P2,P3)
+    zplane = CalculatePlane(P1,P2,P3);
     hold on
-    ezmesh(zplane, [0,28,25,50])
+    %ezmesh(zplane, [0,28,25,50])
 end
 normalsX = normals(:,1);
 normalsX = mean(normalsX);
@@ -129,20 +131,22 @@ normalsY = normals(:,2);
 normalsY = mean(normalsY);
 normalsZ = normals(:,3);
 normalsZ = mean(normalsZ);
-
-normalsX
-normalsY
-normalsZ
-pointMeanNormal = [[normalsX normalsY normalsZ]; [15,40,40]];
-plot3(pointMeanNormal(:,1),pointMeanNormal(:,2),pointMeanNormal(:,3), 'Color', 'red')
+normal = [normalsX normalsY normalsZ];
+meanPointAxis = [mean(extraplot(1:3,1)), mean(extraplot(1:3,2)), mean(extraplot(1:3,3))];
+pointMeanNormal = [[normalsX normalsY normalsZ]; meanPointAxis];
+plot3(pointMeanNormal(:,1),pointMeanNormal(:,2),pointMeanNormal(:,3), 'Color', 'red', 'LineWidth',4 )
 hold on
-ezmesh(zplane, [0,maxtot,mintot,maxtot2])
+%ezmesh(zplane, [0,maxtot,mintot,maxtot2])
 %plot(normal)
 hold on
-plot3(coords(:,1),coords(:,2), coords(:,3), 'o')
+%plot3(coords(:,1),coords(:,2), coords(:,3), 'o')
 hold on
-axis([-50 50 0 100 0 90])
+axis([-250 250 -250 250 50 150])
+
 hold on
-pointAromatic = [normal;posCGTest]
-quiver3(pointAromatic(2,1), pointAromatic(2,2), pointAromatic(2,3),pointAromatic(1,1), pointAromatic(1,2), pointAromatic(1,3))
+result = [];
+result = [result AromaticRings('PHE', gfl, normal)];
+for i = 1:length(result)
+    result(i) = radtodeg(acos(result(i)));
+end
 hold off
