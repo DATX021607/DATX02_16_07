@@ -19,16 +19,17 @@ function [result] = AromaticRings (ResName, gfl, normal)
     CGArray  = [];
     CE1Array = [];
     CE2Array = [];
-    ChainID  = [];
-    resultV =[];
+    chainID  = [];
+    seqNum = [];
+    resultV  = [];
     result   = [];
-    Derp = [];
     for i = pos
 
        if((strcmp({gfl.Model(1).Atom(i).AtomName},atom_name)) == 1) 
            CGArray = [CGArray i];
            %Stores ChainID for each atom extracted
-           ChainID = [ChainID gfl.Model(1).Atom(i).chainID]
+           chainID = [chainID gfl.Model(1).Atom(i).chainID]
+           seqNum = [seqNum gfl.Model(1).Atom(i).resSeq]
        elseif((strcmp({gfl.Model(1).Atom(i).AtomName},atom_name2)) == 1) 
            CE1Array = [CE1Array i];
        elseif((strcmp({gfl.Model(1).Atom(i).AtomName},atom_name3)) == 1) 
@@ -65,7 +66,8 @@ function [result] = AromaticRings (ResName, gfl, normal)
         result(i) = radtodeg(acos(resultV(i)));
     end 
     C1 = num2cell(transpose(result));
-    C2 = cellstr (transpose(ChainID));
-    result = horzcat(C2, C1)
+    C2 = cellstr (transpose(chainID));
+    C3 = num2cell(transpose(seqNum));
+    result = horzcat(C2,C3,C1)
 end
 

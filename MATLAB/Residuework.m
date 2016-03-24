@@ -153,12 +153,11 @@ result = [result AromaticRings(aromatic_res, gfl, normal)];
 hold off
 %Data extracion
 % Create Table Titles
-title = ['Chain ID';'Angle   '];
+title = ['Chain ID  ';'Sequence #';'Angle     '];
 %Combines function data witl table titles
-celldata = transpose(cellstr(title));
-dataToWrite = vertcat(celldata, result);
+celltitle = transpose(cellstr(title));
+dataToWrite = vertcat(celltitle, result);
 %Creat tabe name as protein - Residue
 tabName=strcat(current_proteine, ' - ',aromatic_res );
 %Writes Data (only works if excel is available atm)
-xlswrite('Angles',dataToWrite,tabName,'C2');
-
+xlswrite('Angles',dataToWrite,tabName);
