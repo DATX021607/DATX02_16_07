@@ -6,15 +6,25 @@
 % Generate a PDB file (example from MatLab help)
 % gfl = getpdb('1GFL','TOFILE','1gfl.pdb')
 % Read the PDB file
-current_proteine = '2m4j';
-gfl = pdbread(strcat(current_proteine, '.pdb'));
 
+%Protein to be used
+current_proteine = '2LNQ';
+
+
+filename = strcat(current_proteine, '.pdb');
+if isempty(dir(filename)) == 1 
+    test = 0
+    gfl = getpdb(current_proteine,'ToFile',filename);
+else
+    gfl = pdbread(filename);
+end
 %% Define the Atom Name
 
 atom_name='CA';
 res_name_axis='ILE';
 %For Aromatic Ring Calcualtion
-aromatic_res = 'PHE';
+aromatic_res = ['PHE';'TYR';'TRP']
+aromatic_res = cellstr(aromatic_res)
 
 %gfl.Model(1).Atom(:)
 searchterm = (strcmp({gfl.Model(1).Atom(:).resName},res_name_axis));% & (strcmp({gfl.Model(1).Atom(:).resName},res_name))  & (strcmp(int2str(gfl.Model(1).Atom(:).resSeq),'31')));
@@ -144,20 +154,25 @@ hold on
 hold on
 axis([-250 250 -250 250 50 150])
 %-------------------------------------------------------------
-
-hold on
-result = [];
-%Result is Cell matrix with ChainID : Angle
-result = [result AromaticRings(aromatic_res, gfl, normal)];
-
-hold off
-%Data extracion
-% Create Table Titles
-title = ['Chain ID  ';'Sequence #';'Angle     '];
-%Combines function data witl table titles
-celltitle = transpose(cellstr(title));
-dataToWrite = vertcat(celltitle, result);
-%Creat tabe name as protein - Residue
-tabName=strcat(current_proteine, ' - ',aromatic_res );
-%Writes Data (only works if excel is available atm)
-xlswrite('Angles',dataToWrite,tabName);
+    %FOR PRINTING
+    %hold on
+for i=1:3
+    curr_res=aromatic_res(i,:);
+    result = [];
+    %Result is Cell matrix with ChainID : Angle
+    result = [result AromaticRings(curr_res, gfl, normal)];
+    if (length(result)>0)
+        %FOR PRINTING
+        %hold off
+        %Data extracion
+        % Create Table Titles
+        title = ['Chain ID  ';'Sequence #';'Angle     '];
+        %Combines function data witl table titles
+        celltitle = transpose(cellstr(title));
+        dataToWrite = vertcat(celltitle, result);
+        %Creat tabe name as protein - Residue
+        tabName=strcat(current_proteine, ' - ',curr_res);
+        %Writes Data (only works if excel is available atm)
+        xlswrite('Angles',dataToWrite,tabName{1});
+    end
+end

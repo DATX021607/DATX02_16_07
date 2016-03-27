@@ -62,12 +62,14 @@ function [result] = AromaticRings (ResName, gfl, normal)
         resultV = [resultV dot(calculatedNormal, normal)/(norm(calculatedNormal)*norm(normal))]
 
     end
-    for i = 1:length(resultV)
-        result(i) = radtodeg(acos(resultV(i)));
-    end 
-    C1 = num2cell(transpose(result));
-    C2 = cellstr (transpose(chainID));
-    C3 = num2cell(transpose(seqNum));
-    result = horzcat(C2,C3,C1)
+    if (length(resultV)>0)
+        for i = 1:length(resultV)
+            result(i) = radtodeg(acos(resultV(i)));
+        end 
+        C1 = num2cell(transpose(result));
+        C2 = cellstr (transpose(chainID));
+        C3 = num2cell(transpose(seqNum));
+        result = horzcat(C2,C3,C1)
+    end
 end
 
