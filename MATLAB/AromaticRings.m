@@ -8,6 +8,11 @@ function [result] = AromaticRings (ResName, gfl, normal)
         atom_name = 'CD2';
         atom_name2 = 'CZ2';
         atom_name3 = 'CZ3';
+    elseif(strcmp(ResName, 'HIS') == 1)
+        ResName
+        atom_name = 'CG';
+        atom_name2 = 'CD2';
+        atom_name3 = 'CE1';    
     end
 
     %gfl.Model(1).Atom(:)
@@ -59,6 +64,7 @@ function [result] = AromaticRings (ResName, gfl, normal)
         P3Aro = [XCE2 YCE2 ZCE2];
 
         calculatedNormal = CalculateNormal(P1Aro,P2Aro,P3Aro);
+        
         resultV = [resultV dot(calculatedNormal, normal)/(norm(calculatedNormal)*norm(normal))]
 
     end
