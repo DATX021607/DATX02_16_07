@@ -9,12 +9,13 @@
 
 %Protein to be used
 figures = [];
-coordinatesArray = {};
+
 %proteins = ['2LMQ'; '2LMP'; '2LMO'; '2LMN'; '2M4J']
-proteins = ['2LMP']
+proteins = ['2E8D'; '2RNM'; '2KJ3';'2LMQ';'2LMP'; '2LMO';'2LMN';'2NNT';'2BEG'; '2N1E'; '2MXU'; '2MPZ'; '2MVX'; '2M4J';'2M5N';'2LNQ'];
 %for p = 1:length(proteins)
     %current_proteine = proteins(p,:);
-    current_proteine = '2LMQ'
+for s = 1:size(proteins,1)
+    current_proteine = '2N0A';
     filename = strcat(current_proteine, '.pdb');
     if isempty(dir(filename)) == 1 
         test = 0
@@ -31,14 +32,8 @@ proteins = ['2LMP']
     %aromatic_res = ['TYR'];
     aromatic_res = cellstr(aromatic_res)
 
-    %gfl.Model(1).Atom(:)
-    if(current_proteine == '2LMP')
-        res_name_axis = 'LEU'
-        seqNr = 34;
-        searchterm = (strcmp({gfl.Model(1).Atom(:).resName},res_name_axis));% & (strcmp({gfl.Model(1).Atom(:).resName},res_name))  & (strcmp(int2str(gfl.Model(1).Atom(:).resSeq),'31')));
-        special = 1;
-    end
-    pos = 1:(numel(gfl.Model(1).Atom()));
+
+    pos = 1:(numel(gfl.Model(1).Atom()))
     %Scan the coordinates of these atoms to respective coordinate array 
     X=[gfl.Model(1).Atom(pos).X];
     Y=[gfl.Model(1).Atom(pos).Y];
@@ -73,8 +68,7 @@ proteins = ['2LMP']
     hold on
     
     hold on
-    axis([-250 250 -250 250 50 150])
-    figure;
+    axis([-250 250 -250 250 -100 150])
 %end
  %%   %-------------------------------------------------------------
         %FOR PRINTING
@@ -105,5 +99,5 @@ proteins = ['2LMP']
     figures = [figures f];
     
     
-%end
+end
 savefig(figures,'figures.fig')

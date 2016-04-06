@@ -10,11 +10,23 @@
 %Protein to be used
 figures = [];
 coordinatesArray = {};
+normalsJan = [];
+vectors = [];
 %proteins = ['2LMQ'; '2LMP'; '2LMO'; '2LMN'; '2M4J']
-proteins = ['2LMP']
-%for p = 1:length(proteins)
-    %current_proteine = proteins(p,:);
-    current_proteine = '2LMP'
+%LEU på 2M5N
+%LEU på 2KIB
+%2NNT endast 1 stack VAL används ASN
+%'2E8D' endast 2 stacks VAL används ILE
+%'2RNM'; Specialstorlek
+%'2N1E' : Växer i Y-led istället för Z-led
+%;'2LNQ' : Sned i kanterna, eventuellt endast använda betasheets
+%'2BEG'; : Måste ha max 1 i x-diff för att inte ta fel kopplingar
+%'2LMN' : Måste ha max 1 i y-diff för att inte ta fel kopplingar
+
+proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX']
+for p = 1:length(proteins)
+    current_proteine = proteins(p,:);
+    %current_proteine = '2n0aModel1Beta'
     filename = strcat(current_proteine, '.pdb');
     if isempty(dir(filename)) == 1 
         test = 0
@@ -22,43 +34,63 @@ proteins = ['2LMP']
     else
         gfl = pdbread(filename);
     end
-    
+%%    
     atom_name='CA';
     
-    res_name_axis='ILE';
+    res_name_axis='VAL';
     %For Aromatic Ring Calcualtion
     aromatic_res = ['PHE';'TYR';'TRP';'HIS']
     %aromatic_res = ['TYR'];
     aromatic_res = cellstr(aromatic_res)
 
     %gfl.Model(1).Atom(:)
-    if(current_proteine == '2LMP')
-        res_name_axis = 'LEU'
-        seqNr = 34;
-        searchterm = (strcmp({gfl.Model(1).Atom(:).resName},res_name_axis));% & (strcmp({gfl.Model(1).Atom(:).resName},res_name))  & (strcmp(int2str(gfl.Model(1).Atom(:).resSeq),'31')));
-        special = 1;
-    end
+
+    %res_name_axis = 'LEU'
+    seqNr = 40;
+    searchterm = (strcmp({gfl.Model(1).Atom(:).resName},res_name_axis));% & (strcmp({gfl.Model(1).Atom(:).resName},res_name))  & (strcmp(int2str(gfl.Model(1).Atom(:).resSeq),'31')));
+    special = 1;
     %ST = gfl.Model(1).Atom(:)(2) == 'CA' && gfl.Model(1).Atom(:)(4) == 'ILE' 
     % Search for the couple "Atom name"
     pos = find(searchterm);
     search2 = [];
+    search40 = [];
+    search70 = [];
+    search95 = [];
     Sequence = [];
     for i = pos
         if (special == 1)
-            if((strcmp({gfl.Model(1).Atom(i).AtomName},atom_name)) == 1 && gfl.Model(1).Atom(i).resSeq == seqNr) 
+            if((strcmp({gfl.Model(1).Atom(i).AtomName},atom_name)) == 1)
+                
+%                 if(gfl.Model(1).Atom(i).resSeq == 70)
+%                    search70 = [search70 i]
+%                    
+%                 elseif(gfl.Model(1).Atom(i).resSeq == 95)
+%                     search95 = [search95 i]
+%                 elseif((gfl.Model(1).Atom(i).resSeq == 40))
+%                     search40 = [search40 i]
+%                 end
+                    
                 search2 = [search2 i];
-                Sequence = [Sequence gfl.Model(1).Atom(i).resSeq];
+                
+               Sequence = [Sequence gfl.Model(1).Atom(i).resSeq];
             end
         else
             
-           if((strcmp({gfl.Model(1).Atom(i).AtomName},atom_name)) == 1) 
+           if((strcmp({gfl.Model(1).Atom(i).AtomName},atom_name)) == 1 ) 
                search2 = [search2 i];
                Sequence = [Sequence gfl.Model(1).Atom(i).resSeq];
            end
         end
     end
+    
     pos = search2;
 
+    %coords = sortrows(coords,3);
+    %pos = search40
+    
+%     for fp = 1:length(pos)
+% 
+% 
     X=[gfl.Model(1).Atom(pos).X];
     Y=[gfl.Model(1).Atom(pos).Y];
     Z=[gfl.Model(1).Atom(pos).Z]; 
@@ -68,12 +100,55 @@ proteins = ['2LMP']
     TZ=transpose(Z);
 
     coords=[TX TY TZ];
-
-
-
+%     if(length(coordinatesArray) < 1)
+%         coordinatesArray{1} = coords(fp,:);
+%     else
+%         coordinatesArray{1} = [coordinatesArray{1}; coords(fp,:)]
+%     end
+%     end
+%     pos = search70;
+%     for fp = 1:length(pos)
+%         
+% 
+%     X=[gfl.Model(1).Atom(pos).X];
+%     Y=[gfl.Model(1).Atom(pos).Y];
+%     Z=[gfl.Model(1).Atom(pos).Z]; 
+% 
+%     TX=transpose(X);
+%     TY=transpose(Y);
+%     TZ=transpose(Z);
+% 
+%     coords=[TX TY TZ];
+%     if(length(coordinatesArray) < 2)
+%         coordinatesArray{2} = coords(fp,:);
+%     else
+%         coordinatesArray{2} = [coordinatesArray{2}; coords(fp,:)]
+%     end
+%     end
+%     pos = search95;
+%     for fp = 1:length(pos)
+%         
+% 
+%     X=[gfl.Model(1).Atom(pos).X];
+%     Y=[gfl.Model(1).Atom(pos).Y];
+%     Z=[gfl.Model(1).Atom(pos).Z]; 
+% 
+%     TX=transpose(X);
+%     TY=transpose(Y);
+%     TZ=transpose(Z);
+% 
+%     coords=[TX TY TZ];
+%         %coordinatesArray{3} = [coordinatesArray{3}; coords(pos,:)]
+%     if(length(coordinatesArray) < 3)
+%         coordinatesArray{3} = coords(fp,:);
+%     else
+%         coordinatesArray{3} = [coordinatesArray{3}; coords(fp,:)]
+%     end
+%     end
     numberOfLayers = 0;
     extraplot = [coords pos(:)];
     extraplot = sortrows(extraplot, 3);
+
     for x = 1:(length(extraplot))
        coordinatesAA1 = extraplot(x, :);
        saved = 0;
@@ -87,12 +162,15 @@ proteins = ['2LMP']
 
            distance = norm(aminoAcid1-aminoAcid2);
            Zdiff = abs(coordinatesAA1(3) - coordinatesAA2(3));
-           if(distance < 6)
-               if(Zdiff > 3.7)
+           Xdiff = abs(coordinatesAA1(1) - coordinatesAA2(1));
+           Ydiff = abs(coordinatesAA1(2) - coordinatesAA2(2));
+           %if(distance < 6)
+            %   if(Zdiff > 3.7)
+            if(Xdiff < 4.5 && Ydiff < 4 && Zdiff < 15 && Zdiff > 1.5) %2RNM needs 7, 11, 15, 3.7
                   coordinatesArray{y1} = [allCoordinatesLayer2; coordinatesAA1];
                   saved = 1;
-               end
-           end
+            end
+           %end
        end
        if(saved == 0)
           numberOfLayers = numberOfLayers + 1;
@@ -143,16 +221,29 @@ proteins = ['2LMP']
     %end
     normals = [];
     SequenceLength = length(unique(Sequence));
-    for q = 2:size(coordinatesArray{1},1)-1
+    lowestSize = min(size(coordinatesArray{1},1), size(coordinatesArray{2},1));
+    lowestSize = min(lowestSize, size(coordinatesArray{3},1))
+    
+%     for q = 2:size(lowestSize)-1
+%         P1 = coordinatesArray{1}(q,1:3);
+%         P2 = coordinatesArray{1+SequenceLength}(q,1:3);%1+SequenceLength
+%         P3 = coordinatesArray{1+SequenceLength*2}(q,1:3); %1+SequenceLength*2
+%         normals = [normals; cross(P1-P3, P1-P2)];
+%         zplane = CalculatePlane(P1,P2,P3);
+%         hold on
+%         ezmesh(zplane, [0,28,25,50])
+%     end
+
+    for q = 2:lowestSize-1
         P1 = coordinatesArray{1}(q,1:3);
-        P2 = coordinatesArray{1+SequenceLength}(q,1:3);%1+SequenceLength
-        P3 = coordinatesArray{1+SequenceLength*2}(q,1:3); %1+SequenceLength*2
+        P2 = coordinatesArray{2}(q,1:3);%1+SequenceLength
+        P3 = coordinatesArray{3}(q,1:3); %1+SequenceLength*2
         normals = [normals; cross(P1-P3, P1-P2)];
         zplane = CalculatePlane(P1,P2,P3);
-        hold on
-        ezmesh(zplane, [0,28,25,50])
+        %hold on
+        %ezmesh(zplane, [0,28,25,50])
     end
-    normalsX = normals(:,1);
+    normalsX = normals(:,1)
     normalsX = mean(normalsX);
     normalsY = normals(:,2);
     normalsY = mean(normalsY);
@@ -161,11 +252,101 @@ proteins = ['2LMP']
     normal = [normalsX normalsY normalsZ];
     meanPointAxis = [mean(extraplot(1:3,1)), mean(extraplot(1:3,2)), mean(extraplot(1:3,3))];
     pointMeanNormal = [[normalsX normalsY normalsZ]; meanPointAxis];
-    plot3(pointMeanNormal(:,1),pointMeanNormal(:,2),pointMeanNormal(:,3), 'Color', 'red', 'LineWidth',4 )
+    
+    f = figure;
+    set(f,'name',current_proteine,'numbertitle','off');
+    hold on;
+    %plot3(pointMeanNormal(:,1),pointMeanNormal(:,2),pointMeanNormal(:,3), 'Color', 'red', 'LineWidth',4 )
+    hold on;
+    
+    if(length(current_proteine) > 5)
+        
+        if(current_proteine == '2n0aModel1Beta')
+            stack1 = 1;
+            stack2 = 5;
+            stack3 = 14;
+        else
+            stack1 = 1;
+            stack2 = 2;
+            stack3 = 3;
+        end
+    else
+        stack1 = 1;
+        stack2 = 2;
+        stack3 = 3;
+    end
+    pos = 1:(numel(gfl.Model(1).Atom()))
+    %Scan the coordinates of these atoms to respective coordinate array 
+    X=[gfl.Model(1).Atom(pos).X];
+    Y=[gfl.Model(1).Atom(pos).Y];
+    Z=[gfl.Model(1).Atom(pos).Z];
 
-    axis([-250 250 -250 250 50 150])
-    figure;
-%end
+    % Transpose and Genereate a single coords array
+    TX=transpose(X);
+    TY=transpose(Y);
+    TZ=transpose(Z);
+    coords=[TX TY TZ];
+    % Plot a circle for every atom
+    scatter3(coords(:,1),coords(:,2), coords(:,3)); hold on;
+    % Create best-fit plane using Least squared method
+    [x0, a] = lsplane(coords);
+    point = transpose(x0);
+    normal = transpose(a);
+    %Calculate plane values
+    d = -point*normal';
+    [xx,yy]=ndgrid(-30:80,-30:80);
+    z = (-normal(1)*xx - normal(2)*yy - d)/normal(3);
+    % Plot plane
+    surf(xx,yy,z);  hold on;
+    normalsJan = [normalsJan; normal];
+    %Plot a vector as axis, direction is given by best fit plane
+    multiplier = 50;
+    x0 = transpose(x0);
+    a  = multiplier* transpose(a);
+    hold on
+    quiver3(x0(:,1),x0(:,2),x0(:,3),a(:,1),a(:,2),a(:,3), 'Color', 'green', 'LineWidth',3 )
+    b = -a
+    quiver3(x0(:,1),x0(:,2),x0(:,3),b(:,1),b(:,2),b(:,3), 'Color', 'green', 'LineWidth',3 )
+    hold on
+    
+    hold on
+    axis([-250 250 -250 250 -100 150])
+point1 = coordinatesArray{stack1}(1,1:3)
+point2 = coordinatesArray{stack1}(size(coordinatesArray{stack1},1),1:3)
+
+vector1 = [point2-point1;point1]
+
+point3 = coordinatesArray{stack2}(1,1:3)
+point4 = coordinatesArray{stack2}(size(coordinatesArray{stack2},1),1:3)
+
+vector2 = [point4-point3;point3]
+
+point5 = coordinatesArray{stack3}(1,1:3)
+point6 = coordinatesArray{stack3}(size(coordinatesArray{stack3},1),1:3)
+
+vector3 = [point6-point5;point5]
+
+vectorsX = [vector1(1,1);vector2(1,1);vector3(1,1)]
+vectorsY = [vector1(1,2);vector2(1,2);vector3(1,2)]
+vectorsZ = [vector1(1,3);vector2(1,3);vector3(1,3)]
+
+meanvectorX = mean(vectorsX)
+meanvectorY = mean(vectorsY)
+meanvectorZ = mean(vectorsZ)
+
+finishedvector = [meanvectorX meanvectorY meanvectorZ]
+finishedvector = finishedvector.*3;
+
+vectors = [vectors; finishedvector];
+quiver3(coordinatesArray{stack1}(1,1), coordinatesArray{stack1}(1,2),coordinatesArray{stack1}(1,3),finishedvector(1), finishedvector(2), finishedvector(3),'Color','red', 'LineWidth',4)
+
+
+
+
+figures = [figures f];
+hold off;
+end
+savefig(figures,'figures.fig')
  %%   %-------------------------------------------------------------
         %FOR PRINTING
         %hold on
