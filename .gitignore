@@ -5,3 +5,5 @@
 *.xls
 *.xls.gdsheet
 lsplane.m
+*.fig
+figures.fig

@@ -48,7 +48,7 @@ vectors = [];
     searchterm = [];
     %res_name_axis = 'LEU'
     seqNr = 40;
-    for s = 1:114
+    for s = 1:size(gfl.Model(:),1)
         searchterm = [searchterm (strcmp({gfl.Model(s).Atom(:).resName},res_name_axis))];% & (strcmp({gfl.Model(:).Atom(:).resName},res_name))  & (strcmp(int2str(gfl.Model(:).Atom(:).resSeq),'31')));
     end
     special = 1;
@@ -61,7 +61,7 @@ vectors = [];
     search95 = [];
     Sequence = [];
     atoms = [];
-    for p=1:114
+    for p=1:size(gfl.Model(:),1)
         atoms = [atoms gfl.Model(p).Atom(:)];
     end
         for i = pos
@@ -282,7 +282,7 @@ vectors = [];
         stack3 = 3;
     end
     atomsJan = [];
-    for p = 1:114
+    for p = 1:size(gfl.Model(:),1)
        atomsJan = [atomsJan gfl.Model(p).Atom()];
        pos = 1:(numel(gfl.Model(p).Atom()));
     end
@@ -320,7 +320,7 @@ vectors = [];
     hold on
     
     hold on
-    axis([-60 80 -60 80 -400 200])
+    axis([-60 80 -60 80 -300 100])
 point1 = coordinatesArray{stack1}(1,1:3)
 point2 = coordinatesArray{stack1}(size(coordinatesArray{stack1},1),1:3)
 
@@ -365,7 +365,6 @@ savefig(figures,'figures.fig')
         result = [];
         %Result is Cell matrix with ChainID : Angle
        
-
         result = [result AromaticRings(curr_res, gfl, normal); ];
         if (length(result)>0)
             %FOR PRINTING
@@ -384,7 +383,12 @@ savefig(figures,'figures.fig')
     end
     f = figure;
     figures = [figures f];
+    for i = 1:size(result,1)
+        if(result(i,3) > 90)
+            result(i,3) = 180-result(i,3);
+        end    
+    end
     
     
 %end
-savefig(figures,'figures.fig')
+%savefig(figures,'figures.fig')
