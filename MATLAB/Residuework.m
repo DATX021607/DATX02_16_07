@@ -7,6 +7,15 @@
 % gfl = getpdb('1GFL','TOFILE','1gfl.pdb')
 % Read the PDB file
 
+
+%--------------------------------
+%Available Functions
+%[point, direction] = PlaneBestFit(gfl)
+%[point, direction] = BetaSolenoid(gfl)
+%[coords]=CoordsGenerator(gfl)
+%PlotAxis(x0, a, coords)
+%-------------------------------
+
 %Protein to be used
 figures = [];
 coordinatesArray = {};
@@ -22,17 +31,22 @@ vectors = [];
 %;'2LNQ' : Sned i kanterna, eventuellt endast använda betasheets
 %'2BEG'; : Måste ha max 1 i x-diff för att inte ta fel kopplingar
 %'2LMN' : Måste ha max 1 i y-diff för att inte ta fel kopplingar
-
+  
 proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX']
 for p = 1:length(proteins)
-    current_proteine = proteins(p,:);
-    %current_proteine = '2n0aModel1Beta'
-    filename = strcat(current_proteine, '.pdb');
-    if isempty(dir(filename)) == 1 
-        test = 0
-        gfl = getpdb(current_proteine,'ToFile',filename);
-    else
-        gfl = pdbread(filename);
+    %current_proteine = proteins(p,:);
+    current_proteine = '1Z2F'
+    %Check if the current protein is already scanned into matlab
+    %If yes then skip this part
+    if((strcmp({gfl.Header.idCode},current_proteine)) == 0) 
+        filename = strcat(current_proteine, '.pdb');
+        if isempty(dir(filename)) == 1 
+            test = 0
+            gfl = getpdb(current_proteine,'ToFile',filename);
+        else
+            gfl = pdbread(filename);
+        end
+        BetaSolenoid(gfl)
     end
 %%    
     atom_name='CA';
@@ -91,15 +105,9 @@ for p = 1:length(proteins)
 %     for fp = 1:length(pos)
 % 
 % 
-    X=[gfl.Model(1).Atom(pos).X];
-    Y=[gfl.Model(1).Atom(pos).Y];
-    Z=[gfl.Model(1).Atom(pos).Z]; 
+%Generating Coords from gfl 
+coords=CoordsGenerator(gfl);
 
-    TX=transpose(X);
-    TY=transpose(Y);
-    TZ=transpose(Z);
-
-    coords=[TX TY TZ];
 %     if(length(coordinatesArray) < 1)
 %         coordinatesArray{1} = coords(fp,:);
 %     else
@@ -275,42 +283,11 @@ for p = 1:length(proteins)
         stack2 = 2;
         stack3 = 3;
     end
-    pos = 1:(numel(gfl.Model(1).Atom()))
-    %Scan the coordinates of these atoms to respective coordinate array 
-    X=[gfl.Model(1).Atom(pos).X];
-    Y=[gfl.Model(1).Atom(pos).Y];
-    Z=[gfl.Model(1).Atom(pos).Z];
-
-    % Transpose and Genereate a single coords array
-    TX=transpose(X);
-    TY=transpose(Y);
-    TZ=transpose(Z);
-    coords=[TX TY TZ];
-    % Plot a circle for every atom
-    scatter3(coords(:,1),coords(:,2), coords(:,3)); hold on;
-    % Create best-fit plane using Least squared method
-    [x0, a] = lsplane(coords);
-    point = transpose(x0);
-    normal = transpose(a);
-    %Calculate plane values
-    d = -point*normal';
-    [xx,yy]=ndgrid(-30:80,-30:80);
-    z = (-normal(1)*xx - normal(2)*yy - d)/normal(3);
-    % Plot plane
-    surf(xx,yy,z);  hold on;
-    normalsJan = [normalsJan; normal];
-    %Plot a vector as axis, direction is given by best fit plane
-    multiplier = 50;
-    x0 = transpose(x0);
-    a  = multiplier* transpose(a);
-    hold on
-    quiver3(x0(:,1),x0(:,2),x0(:,3),a(:,1),a(:,2),a(:,3), 'Color', 'green', 'LineWidth',3 )
-    b = -a
-    quiver3(x0(:,1),x0(:,2),x0(:,3),b(:,1),b(:,2),b(:,3), 'Color', 'green', 'LineWidth',3 )
-    hold on
     
-    hold on
-    axis([-250 250 -250 250 -100 150])
+    %Use Plane of Best Fit method to find axis
+    [x0, a] = PlaneBestFit(gfl);
+    
+    
 point1 = coordinatesArray{stack1}(1,1:3)
 point2 = coordinatesArray{stack1}(size(coordinatesArray{stack1},1),1:3)
 

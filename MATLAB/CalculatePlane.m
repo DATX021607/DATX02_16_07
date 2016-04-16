@@ -12,7 +12,6 @@ b3 = normal(3);
 hold on
 
 
-
 point2 = [b1 b2 b3];
 
 pointsToPlot = [point2;P2];
