@@ -15,7 +15,10 @@
 %[coords]=CoordsGenerator(gfl)
 %PlotAxis(x0, a, coords)
 %-------------------------------
-
+XRestraint = 4.5;
+YRestraint = 4;
+ZLowRestraint = 1.5;
+ZHighRestraint = 15;
 %Protein to be used
 figures = [];
 coordinatesArray = {};
@@ -28,30 +31,49 @@ vectors = [];
 %'2E8D' endast 2 stacks VAL används ILE
 %'2RNM'; Specialstorlek
 %'2N1E' : Växer i Y-led istället för Z-led
+%'2M5N' : Växer i Y-led istället för Z-led
+%'2KIB' : Växer i Y-led istället för Z-led
 %;'2LNQ' : Sned i kanterna, eventuellt endast använda betasheets
 %'2BEG'; : Måste ha max 1 i x-diff för att inte ta fel kopplingar
 %'2LMN' : Måste ha max 1 i y-diff för att inte ta fel kopplingar
-  
-proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX']
+%'2N1E'; '2LNQ'; '2BEG'; '2LMN'
+proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX'; '2E8D'; '2KIB';'2N1E']
 for p = 1:length(proteins)
     %current_proteine = proteins(p,:);
-    current_proteine = '1Z2F'
+    current_proteine = proteins(p,:);
     %Check if the current protein is already scanned into matlab
     %If yes then skip this part
-    if((strcmp({gfl.Header.idCode},current_proteine)) == 0) 
-        filename = strcat(current_proteine, '.pdb');
+    %if((strcmp({gfl.Header.idCode},current_proteine)) == 0) 
+     filename = strcat(current_proteine, '.pdb');
         if isempty(dir(filename)) == 1 
             test = 0
             gfl = getpdb(current_proteine,'ToFile',filename);
         else
             gfl = pdbread(filename);
         end
-        BetaSolenoid(gfl)
-    end
+       % BetaSolenoid(gfl)
+    %end
 %%    
     atom_name='CA';
-    
-    res_name_axis='VAL';
+    if ((strcmp(current_proteine, '2KIB') == 1))
+        res_name_axis = 'ALA';
+        YRestraint = 15;
+        ZHighRestraint = 9;
+        ZLowRestraint = 0;
+        XRestraint = 8;
+    elseif (strcmp(current_proteine, '2NNT') == 1)
+        res_name_axis = 'ASN';
+    elseif (strcmp(current_proteine, '2E8D' == 1))
+        res_name_axis = 'ILE';
+    elseif (strcmp(current_proteine, '2N1E') == 1)
+        res_name_axis = 'VAL'
+        YRestraint = 15;
+        ZHighRestraint = 4.6;
+        ZLowRestraint = 0;
+        XRestraint = 0.7;
+    else
+        res_name_axis='VAL';
+    end
     %For Aromatic Ring Calcualtion
     aromatic_res = ['PHE';'TYR';'TRP';'HIS']
     %aromatic_res = ['TYR'];
@@ -106,7 +128,7 @@ for p = 1:length(proteins)
 % 
 % 
 %Generating Coords from gfl 
-coords=CoordsGenerator(gfl);
+coords=CoordsGenerator(gfl, pos);
 
 %     if(length(coordinatesArray) < 1)
 %         coordinatesArray{1} = coords(fp,:);
@@ -153,8 +175,9 @@ coords=CoordsGenerator(gfl);
 %         coordinatesArray{3} = [coordinatesArray{3}; coords(fp,:)]
 %     end
 %     end
+    
     numberOfLayers = 0;
-    extraplot = [coords pos(:)];
+    extraplot = [coords pos(:)]
     extraplot = sortrows(extraplot, 3);
 
     for x = 1:(length(extraplot))
@@ -174,7 +197,7 @@ coords=CoordsGenerator(gfl);
            Ydiff = abs(coordinatesAA1(2) - coordinatesAA2(2));
            %if(distance < 6)
             %   if(Zdiff > 3.7)
-            if(Xdiff < 4.5 && Ydiff < 4 && Zdiff < 15 && Zdiff > 1.5) %2RNM needs 7, 11, 15, 3.7
+            if(Xdiff < XRestraint && Ydiff < YRestraint && Zdiff < ZHighRestraint && Zdiff > ZLowRestraint) %2RNM needs 7, 11, 15, 3.7
                   coordinatesArray{y1} = [allCoordinatesLayer2; coordinatesAA1];
                   saved = 1;
             end
@@ -267,23 +290,10 @@ coords=CoordsGenerator(gfl);
     %plot3(pointMeanNormal(:,1),pointMeanNormal(:,2),pointMeanNormal(:,3), 'Color', 'red', 'LineWidth',4 )
     hold on;
     
-    if(length(current_proteine) > 5)
-        
-        if(current_proteine == '2n0aModel1Beta')
-            stack1 = 1;
-            stack2 = 5;
-            stack3 = 14;
-        else
-            stack1 = 1;
-            stack2 = 2;
-            stack3 = 3;
-        end
-    else
-        stack1 = 1;
-        stack2 = 2;
-        stack3 = 3;
-    end
-    
+
+    stack1 = 1;
+    stack2 = 2;
+    stack3 = 3;
     %Use Plane of Best Fit method to find axis
     [x0, a] = PlaneBestFit(gfl);
     
@@ -322,6 +332,10 @@ quiver3(coordinatesArray{stack1}(1,1), coordinatesArray{stack1}(1,2),coordinates
 
 figures = [figures f];
 hold off;
+XRestraint = 4.5;
+YRestraint = 4;
+ZLowRestraint = 1.5;
+ZHighRestraint = 15;
 end
 savefig(figures,'figures.fig')
  %%   %-------------------------------------------------------------

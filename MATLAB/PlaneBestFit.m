@@ -8,7 +8,7 @@
 
 function [point, direction] = PlaneBestFit(gfl)
 
-coords=CoordsGenerator(gfl);
+coords=CoordsGenerator(gfl, 0);
 %Calculate point of best fit and normal to plane
 [x0, a] = lsplane(coords);
 point = transpose(x0);

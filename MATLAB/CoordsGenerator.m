@@ -1,5 +1,7 @@
-function [coords]=CoordsGenerator(gfl)
-pos = 1:(numel(gfl.Model(1).Atom()));
+function [coords]=CoordsGenerator(gfl, pos)
+if pos == 0
+    pos = 1:(numel(gfl.Model(1).Atom()));
+end
 %Scan the coordinates of these atoms to respective coordinate array 
 X=[gfl.Model(1).Atom(pos).X];
 Y=[gfl.Model(1).Atom(pos).Y];
