@@ -8,7 +8,7 @@
 
  function [point, direction] = BetaSolenoid(gfl)
  
-coords=CoordsGenerator(gfl);
+coords=CoordsGenerator(gfl, 0);
 % Plot a circle for every atom
 scatter3(coords(:,1),coords(:,2), coords(:,3)); 
 hold on;

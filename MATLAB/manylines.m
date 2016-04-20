@@ -1,13 +1,19 @@
-
+function[finishedvector]  = manylines(coordinatesArray, gfl)
 %if(current_proteine == '2n0aModel1Beta')
 %    stack1 = 1;
 %    stack2 = 5;
 %    stack3 = 14;
 %else
+if(strcmp(gfl.Header.idCode,'2LMN') == 1)
+    stack1 = 2;
+    stack2 = 4;
+    stack3 = 7;
+else
     stack1 = 1;
     stack2 = 2;
     stack3 = 3;
-%end
+end
+
 
 point1 = coordinatesArray{stack1}(1,1:3)
 point2 = coordinatesArray{stack1}(size(coordinatesArray{stack1},1),1:3)
@@ -35,7 +41,7 @@ meanvectorZ = mean(vectorsZ)
 finishedvector = [meanvectorX meanvectorY meanvectorZ]
 finishedvector = finishedvector.*3;
 
-quiver3(coordinatesArray{stack1}(1,1), coordinatesArray{stack1}(1,2),coordinatesArray{stack1}(1,3),finishedvector(1), finishedvector(2), finishedvector(3),'Color','red', 'LineWidth',4)
+quiver3(coordinatesArray{stack1}(1,1), coordinatesArray{stack1}(1,2),coordinatesArray{stack1}(1,3),finishedvector(1), finishedvector(2), finishedvector(3),'Color','blue', 'LineWidth',4)
 
 
 

@@ -65,39 +65,11 @@ vectors = [];
         atoms = [atoms gfl.Model(p).Atom(:)];
     end
         for i = pos
-            if (special == 1)
                 if((strcmp({atoms(i).AtomName},atom_name)) == 1)
-
-    %                 if(gfl.Model(:).Atom(i).resSeq == 70)
-    %                    search70 = [search70 i]
-    %                    
-    %                 elseif(gfl.Model(:).Atom(i).resSeq == 95)
-    %                     search95 = [search95 i]
-    %                 elseif((gfl.Model(:).Atom(i).resSeq == 40))
-    %                     search40 = [search40 i]
-    %                 end
-
                     search2 = [search2 i];
-
-                   %Sequence = [Sequence gfl.Model(p).Atom(i).resSeq];
                 end
-            else
-
-               if((strcmp({gfl.Model(p).Atom(i).AtomName},atom_name)) == 1 ) 
-                   search2 = [search2 i];
-                   Sequence = [Sequence gfl.Model(p).Atom(i).resSeq];
-               end
-            end
         end
     pos = search2;
-
-    %coords = sortrows(coords,3);
-    %pos = search40
-    
-%     for fp = 1:length(pos)
-% 
-% 
-
     X=[atoms(pos).X];
     Y=[atoms(pos).Y];
     Z=[atoms(pos).Z]; 
@@ -106,51 +78,7 @@ vectors = [];
     TZ=transpose(Z);
 
     coords=[TX TY TZ];
-%     if(length(coordinatesArray) < 1)
-%         coordinatesArray{1} = coords(fp,:);
-%     else
-%         coordinatesArray{1} = [coordinatesArray{1}; coords(fp,:)]
-%     end
-%     end
-%     pos = search70;
-%     for fp = 1:length(pos)
-%         
-% 
-%     X=[gfl.Model(:).Atom(pos).X];
-%     Y=[gfl.Model(:).Atom(pos).Y];
-%     Z=[gfl.Model(:).Atom(pos).Z]; 
-% 
-%     TX=transpose(X);
-%     TY=transpose(Y);
-%     TZ=transpose(Z);
-% 
-%     coords=[TX TY TZ];
-%     if(length(coordinatesArray) < 2)
-%         coordinatesArray{2} = coords(fp,:);
-%     else
-%         coordinatesArray{2} = [coordinatesArray{2}; coords(fp,:)]
-%     end
-%     end
-%     pos = search95;
-%     for fp = 1:length(pos)
-%         
-% 
-%     X=[gfl.Model(:).Atom(pos).X];
-%     Y=[gfl.Model(:).Atom(pos).Y];
-%     Z=[gfl.Model(:).Atom(pos).Z]; 
-% 
-%     TX=transpose(X);
-%     TY=transpose(Y);
-%     TZ=transpose(Z);
-% 
-%     coords=[TX TY TZ];
-%         %coordinatesArray{3} = [coordinatesArray{3}; coords(pos,:)]
-%     if(length(coordinatesArray) < 3)
-%         coordinatesArray{3} = coords(fp,:);
-%     else
-%         coordinatesArray{3} = [coordinatesArray{3}; coords(fp,:)]
-%     end
-%     end
+
     numberOfLayers = 0
     extraplot = [coords pos(:)];
     extraplot = sortrows(extraplot, 3);
@@ -184,17 +112,6 @@ vectors = [];
        end
     end
 
-
-
-    %plot3(X,Y,Z, '.')
-
-
-    % Extract the coordinates of the Atoms matching the search criteria
-    % cmap = colormap(parula(length(Z)));
-    % scatter3(X,Y,Z,50, cmap)
-
-    % line(X,Y,Z)
-
     hold on
 
     max1 = max(coordinatesArray{1}(:,1));
@@ -214,73 +131,23 @@ vectors = [];
     C = linspace(mintot-5,maxtot2+10);
     coordinates = {};
     points = zeros(numberOfLayers,3)
-    %for x = 1:numberOfLists
-    %    coordinates{x} = test{x}(1,:)
-    %    points(x,:) = coordinates{x}(1:3)
-
-    %     coordinates2{x} = test{x}(size(test{x},1),:)
-    %     points2(x,:) = coordinates2{x}(1:3)
-    %     
-    %     coordinates3{x} = test{x}(size(test{x},1)/2,:)
-    %     points3(x,:) = coordinates3{x}(1:3)
-
-    %end
     normals = [];
     SequenceLength = length(unique(Sequence));
     lowestSize = min(size(coordinatesArray{1},1), size(coordinatesArray{2},1));
     lowestSize = min(lowestSize, size(coordinatesArray{3},1))
     
-%     for q = 2:size(lowestSize)-1
-%         P1 = coordinatesArray{1}(q,1:3);
-%         P2 = coordinatesArray{1+SequenceLength}(q,1:3);%1+SequenceLength
-%         P3 = coordinatesArray{1+SequenceLength*2}(q,1:3); %1+SequenceLength*2
-%         normals = [normals; cross(P1-P3, P1-P2)];
-%         zplane = CalculatePlane(P1,P2,P3);
-%         hold on
-%         ezmesh(zplane, [0,28,25,50])
-%     end
 
-%     for q = 2:lowestSize-1
-%         P1 = coordinatesArray{1}(q,1:3);
-%         P2 = coordinatesArray{2}(q,1:3);%1+SequenceLength
-%         P3 = coordinatesArray{3}(q,1:3); %1+SequenceLength*2
-%         normals = [normals; cross(P1-P3, P1-P2)];
-%         zplane = CalculatePlane(P1,P2,P3);
-%         %hold on
-%         %ezmesh(zplane, [0,28,25,50])
-%     end
-%     normalsX = normals(:,1)
-%     normalsX = mean(normalsX);
-%     normalsY = normals(:,2);
-%     normalsY = mean(normalsY);
-%     normalsZ = normals(:,3);
-%     normalsZ = mean(normalsZ);
-%     normal = [normalsX normalsY normalsZ];
-%     meanPointAxis = [mean(extraplot(1:3,1)), mean(extraplot(1:3,2)), mean(extraplot(1:3,3))];
-%     pointMeanNormal = [[normalsX normalsY normalsZ]; meanPointAxis];
-%     
     f = figure;
     set(f,'name',current_proteine,'numbertitle','off');
     hold on;
     %plot3(pointMeanNormal(:,1),pointMeanNormal(:,2),pointMeanNormal(:,3), 'Color', 'red', 'LineWidth',4 )
     hold on;
     
-    if(length(current_proteine) > 5)
-        
-        if(current_proteine == '2n0aModel1Beta')
-            stack1 = 1;
-            stack2 = 5;
-            stack3 = 14;
-        else
-            stack1 = 1;
-            stack2 = 2;
-            stack3 = 3;
-        end
-    else
-        stack1 = 1;
-        stack2 = 2;
-        stack3 = 3;
-    end
+   
+    stack1 = 1;
+    stack2 = 2;
+    stack3 = 3;
+
     atomsJan = [];
     for p = 1:size(gfl.Model(:),1)
        atomsJan = [atomsJan gfl.Model(p).Atom()];
