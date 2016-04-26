@@ -36,10 +36,10 @@ stericZippers = {'4ZNN';'3NHC';'3NHD';'4R0P';'3NVF';'3OW9';'3LOZ';'2OMP';'3NVE';
 
 %proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX';'2KIB';'2N1E';'2M5N';'2NLQ';'2NNT';'4XFN';'4ZNN';'3NHC';'3NHD';'4R0P';'3NVF';'3OW9';'3LOZ';'2OMP';'3NVE';'3FVA';'3FTL';'2OMQ';'4NP8';'4ONK';'4OLR']
 %endast zippers 
-proteins = ['4ZNN';'3NHC';'3NHD';'4ROP';'3NVF';'3OW9';'2OMP';'3NVE';'3FVA';'3FTL';'2OMQ';'4NP8';'4ONK';'4OLR'];
+proteins = ['4ZNN';'3NHC';'3NHD';'4R0P';'3NVF';'3OW9';'2OMP';'3NVE';'3FVA';'3FTL';'2OMQ';'4NP8';'4ONK';'4OLR'];
 for p = 1:length(proteins)
-    %current_proteine = '2LMN'
-    current_proteine = proteins(p,:);
+    %current_proteine = '4R0P'
+    %current_proteine = proteins(p,:);
     %Check if the current protein is already scanned into matlab
     %If yes then skip this part
     %if((strcmp({gfl.Header.idCode},current_proteine)) == 0) 
@@ -140,18 +140,18 @@ for p = 1:length(proteins)
         ZLowRestraint = 1.5;
         ZHighRestraint = 15;
 
-end
-savefig(figures,'figures.fig')
+
+%savefig(figures,'figures.fig')
  %%   %-------------------------------------------------------------
         %FOR PRINTING
-        %hold on
+        hold on
     for i=1:length(aromatic_res)
         curr_res=aromatic_res(i,:);
         result = [];
         %Result is Cell matrix with ChainID : Angle
        
 
-        result = [result AromaticRings(curr_res, gfl, normal); ];
+        result = [result AromaticRings(curr_res, gfl, normal ,steric) ];
         if (length(result)>0)
             %FOR PRINTING
             %hold off
@@ -171,5 +171,5 @@ savefig(figures,'figures.fig')
     figures = [figures f];
     
     
-%end
+end
 savefig(figures,'figures.fig')

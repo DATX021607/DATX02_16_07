@@ -10,7 +10,7 @@ function[finishedvector, f] = StericZippers(gfl, Restraints, current_proteine)
 % Read the PDB file
 ValSteric = {'4XFN';'4ZNN';'4NP8';'4ONK';'4OLR'};
 GlySteric = {'3NHC';'3NHD'};
-IleSteric = {'4ROP';'3NVF'};
+IleSteric = {'4R0P';'3NVF'};
 LeuSteric = {'2OMP';'2OMQ'};
 AsnSteric = {'3FVA';'3FTL'};
 PheSteric = {'3OW9'};
@@ -65,11 +65,11 @@ vectors = [];
     for p=1:size(gfl.Model(:),1)
         atoms = [atoms gfl.Model(p).Atom(:)];
     end
-        for i = pos
-                if((strcmp({atoms(i).AtomName},atom_name)) == 1)
-                    search2 = [search2 i];
-                end
-        end
+    for i = pos
+            if((strcmp({atoms(i).AtomName},atom_name)) == 1)
+                search2 = [search2 i];
+            end
+    end
     pos = search2;
     X=[atoms(pos).X];
     Y=[atoms(pos).Y];
