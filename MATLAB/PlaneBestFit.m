@@ -6,19 +6,14 @@
 %  of best fit. The line is defined by point of origin and direction 
 %  [point, direction] = BetaSolenoid(gfl)
 
-function [point, direction] = PlaneBestFit(gfl)
-
+function [point, direction] = PlaneBestFit(gfl,printAxis)
 coords=CoordsGenerator(gfl, 0);
 %Calculate point of best fit and normal to plane
 [x0, a] = lsplane(coords);
 point = transpose(x0);
-normal = transpose(a);
-
+direction = transpose(a);
 %Plot Axis (Optional)
-PlotAxis(x0, a, coords)
+PlotAxis(point, direction, gfl, coords,printAxis)
 %Assign final values
-hold on
-axis([-250 250 -250 250 -100 150])
-point = x0;
-direction = a;
+
 %End

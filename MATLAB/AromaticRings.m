@@ -1,6 +1,22 @@
-function [result] = AromaticRings (ResName, gfl, normal, steric)
-
+function [result] = AromaticRings (ResName, gfl, normal, steric,current_proteine, print)
+    % Initiate variables
     searchterm = [];
+    CGArray  = [];
+    CE1Array = [];
+    CE2Array = [];
+    chainID  = [];
+    seqNum = [];
+    resultV  = [];
+    result   = [];
+    atoms = [];
+    % Creates a figure if we wish to print
+    if print ~= 0
+        f = figure;
+        figurename = strcat(strcat(current_proteine, ' -  '),ResName);
+
+        set(f,'name',figurename{1},'numbertitle','off');
+    end
+    % Decide what atoms to use depending on Amino Acid
     if(strcmp(ResName, 'PHE') == 1 || strcmp(ResName, 'TYR') == 1)
         atom_name='CG';
         atom_name2 = 'CE1';
@@ -15,8 +31,7 @@ function [result] = AromaticRings (ResName, gfl, normal, steric)
         atom_name2 = 'CD2';
         atom_name3 = 'CE1';    
     end
-
-    %gfl.Model(1).Atom(:)
+    % if Steric
     if steric == 1
         for s = 1:size(gfl.Model(:),1)
             searchterm = [searchterm (strcmp({gfl.Model(s).Atom(:).resName},ResName))];% & (strcmp({gfl.Model(:).Atom(:).resName},res_name))  & (strcmp(int2str(gfl.Model(:).Atom(:).resSeq),'31')));
@@ -26,16 +41,7 @@ function [result] = AromaticRings (ResName, gfl, normal, steric)
     end
     % Search for the couple "Atom name"
     pos = find(searchterm);
-    search2  = [];
-    Sequence = [];
-    CGArray  = [];
-    CE1Array = [];
-    CE2Array = [];
-    chainID  = [];
-    seqNum = [];
-    resultV  = [];
-    result   = [];
-    atoms = [];
+
     if steric == 1
         for p=1:size(gfl.Model(:),1)
             atoms = [atoms gfl.Model(p).Atom(:)];
@@ -93,10 +99,8 @@ function [result] = AromaticRings (ResName, gfl, normal, steric)
             P2Aro = [XCE1 YCE1 ZCE1];
             P3Aro = [XCE2 YCE2 ZCE2];
 
-            calculatedNormal = CalculateNormal(P1Aro,P2Aro,P3Aro);
-
+            calculatedNormal = CalculateNormal(P1Aro,P2Aro,P3Aro,print);
             resultV = [resultV dot(calculatedNormal, normal)/(norm(calculatedNormal)*norm(normal))]
-
         end
         
     else
@@ -116,13 +120,12 @@ function [result] = AromaticRings (ResName, gfl, normal, steric)
             P1Aro = [XCG YCG ZCG];
             P2Aro = [XCE1 YCE1 ZCE1];
             P3Aro = [XCE2 YCE2 ZCE2];
-
-            calculatedNormal = CalculateNormal(P1Aro,P2Aro,P3Aro);
-
+            calculatedNormal = CalculateNormal(P1Aro,P2Aro,P3Aro,print);
             resultV = [resultV dot(calculatedNormal, normal)/(norm(calculatedNormal)*norm(normal))]
-
         end
     end
+
+        
     if (length(resultV)>0)
         for i = 1:length(resultV)
             result(i) = radtodeg(acos(resultV(i)));
