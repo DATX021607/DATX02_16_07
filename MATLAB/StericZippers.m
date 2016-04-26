@@ -1,3 +1,5 @@
+function[finishedvector, f] = StericZippers(gfl, Restraints, current_proteine)
+
 % gfl = pdbread('2e8d.pdb');
 %
 % pos = find((strcmp{gfl.Model.Atom(:).AtomName},atom_name))
@@ -6,39 +8,41 @@
 % Generate a PDB file (example from MatLab help)
 % gfl = getpdb('1GFL','TOFILE','1gfl.pdb')
 % Read the PDB file
-
+ValSteric = {'4XFN';'4ZNN';'4NP8';'4ONK';'4OLR'};
+GlySteric = {'3NHC';'3NHD'};
+IleSteric = {'4ROP';'3NVF'};
+LeuSteric = {'2OMP';'2OMQ'};
+AsnSteric = {'3FVA';'3FTL'};
+PheSteric = {'3OW9'};
+SerSteric = {'3LOZ'};
+MetSteric = {'3NVE'};
 %Protein to be used
 figures = [];
 coordinatesArray = {};
 normalsJan = [];
 vectors = [];
 
-%proteins = ['2LMQ'; '2LMP'; '2LMO'; '2LMN'; '2M4J']
-%LEU på 2M5N
-%LEU på 2KIB
-%2NNT endast 1 stack VAL används ASN
-%'2E8D' endast 2 stacks VAL används ILE
-%'2RNM'; Specialstorlek
-%'2N1E' : Växer i Y-led istället för Z-led
-%;'2LNQ' : Sned i kanterna, eventuellt endast använda betasheets
-%'2BEG'; : Måste ha max 1 i x-diff för att inte ta fel kopplingar
-%'2LMN' : Måste ha max 1 i y-diff för att inte ta fel kopplingar
-
-%proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX']
-%for p = 1:length(proteins)
-    %current_proteine = proteins(p,:);
-    current_proteine = '2m5k'
-    filename = strcat(current_proteine, '.pdb');
-    if isempty(dir(filename)) == 1 
-        test = 0
-        gfl = getpdb(current_proteine,'ToFile',filename);
-    else
-        gfl = pdbread(filename);
-    end
-%%    
+   
     atom_name='CA';
     
-    res_name_axis='LEU';
+    if  any(ismember(ValSteric, current_proteine)) == 1
+        res_name_axis ='VAL';
+    elseif any(ismember(GlySteric, current_proteine)) == 1
+        res_name_axis = 'GLY';
+    elseif any(ismember(AsnSteric,current_proteine)) == 1
+        res_name_axis = 'ASN';
+    elseif any(ismember(PheSteric, current_proteine)) == 1
+        res_name_axis = 'PHE';
+    elseif any(ismember(SerSteric, current_proteine)) == 1
+        res_name_axis = 'SER';
+    elseif any(ismember(MetSteric, current_proteine)) == 1
+        res_name_axis = 'MET';
+    elseif any(ismember(IleSteric, current_proteine)) == 1
+        res_name_axis = 'ILE';
+    elseif any(ismember(LeuSteric, current_proteine)) == 1
+        res_name_axis = 'LEU';
+    end
+
     %For Aromatic Ring Calcualtion
     aromatic_res = ['PHE';'TYR';'TRP';'HIS']
     %aromatic_res = ['TYR'];
@@ -56,9 +60,6 @@ vectors = [];
     % Search for the couple "Atom name"
     pos = find(searchterm);
     search2 = [];
-    search40 = [];
-    search70 = [];
-    search95 = [];
     Sequence = [];
     atoms = [];
     for p=1:size(gfl.Model(:),1)
@@ -79,68 +80,16 @@ vectors = [];
 
     coords=[TX TY TZ];
 
-    numberOfLayers = 0
-    extraplot = [coords pos(:)];
-    extraplot = sortrows(extraplot, 3);
-
-    for x = 1:(length(extraplot))
-       coordinatesAA1 = extraplot(x, :);
-       saved = 0;
-       for y1 = 1:numberOfLayers
-
-           allCoordinatesLayer2 = coordinatesArray{y1};
-           coordinatesAA2 = allCoordinatesLayer2(size(allCoordinatesLayer2, 1), :);
-           aminoAcid1 = [coordinatesAA2(1); coordinatesAA2(2); coordinatesAA2(3)];
-           aminoAcid2 = [coordinatesAA1(1); coordinatesAA1(2); coordinatesAA1(3)];
-
-
-           distance = norm(aminoAcid1-aminoAcid2);
-           Zdiff = abs(coordinatesAA1(3) - coordinatesAA2(3));
-           Xdiff = abs(coordinatesAA1(1) - coordinatesAA2(1));
-           Ydiff = abs(coordinatesAA1(2) - coordinatesAA2(2));
-           %if(distance < 6)
-            %   if(Zdiff > 3.7)
-            if(Xdiff < 4.5 && Ydiff < 4 && Zdiff < 15 && Zdiff > 1.5) %2RNM needs 7, 11, 15, 3.7
-                  coordinatesArray{y1} = [allCoordinatesLayer2; coordinatesAA1];
-                  saved = 1;
-            end
-           %end
-       end
-       if(saved == 0)
-          numberOfLayers = numberOfLayers + 1;
-          coordinatesArray{numberOfLayers} = coordinatesAA1;
-       end
-    end
+    coordinatesArray = createCoordinatesArray(coords, pos, Restraints);
 
     hold on
 
-    max1 = max(coordinatesArray{1}(:,1));
-    max2 = max(coordinatesArray{2}(:,1));
-    max3 = max(coordinatesArray{3}(:,1));
-    maxtot = max([max1,max2,max3]);
-    B = linspace(0, maxtot + 5);
-    max1 = max(coordinatesArray{1}(:,2));
-    max2 = max(coordinatesArray{2}(:,2));
-    max3 = max(coordinatesArray{3}(:,2));
-    maxtot2 = max([max1,max2,max3]);
-
-    min1 = min(coordinatesArray{1}(:,2));
-    min2 = min(coordinatesArray{2}(:,2));
-    min3 = min(coordinatesArray{3}(:,2));
-    mintot = min([min1,min2,min3]);
-    C = linspace(mintot-5,maxtot2+10);
-    coordinates = {};
-    points = zeros(numberOfLayers,3)
-    normals = [];
-    SequenceLength = length(unique(Sequence));
-    lowestSize = min(size(coordinatesArray{1},1), size(coordinatesArray{2},1));
-    lowestSize = min(lowestSize, size(coordinatesArray{3},1))
     
 
     f = figure;
     set(f,'name',current_proteine,'numbertitle','off');
     hold on;
-    %plot3(pointMeanNormal(:,1),pointMeanNormal(:,2),pointMeanNormal(:,3), 'Color', 'red', 'LineWidth',4 )
+    %plot3(pointMeanNormal(:,1),pointMeanNormal(:,4),pointMeanNormal(:,3), 'Color', 'red', 'LineWidth',4 )
     hold on;
     
    
@@ -223,39 +172,3 @@ quiver3(coordinatesArray{stack1}(1,1), coordinatesArray{stack1}(1,2),coordinates
 figures = [figures f];
 hold off;
 %end
-savefig(figures,'figures.fig')
- %%   %-------------------------------------------------------------
-        %FOR PRINTING
-        %hold on
-    for i=1:length(aromatic_res)
-        curr_res=aromatic_res(i,:);
-        result = [];
-        %Result is Cell matrix with ChainID : Angle
-       
-        result = [result AromaticRings(curr_res, gfl, normal); ];
-        if (length(result)>0)
-            %FOR PRINTING
-            %hold off
-            %Data extracion
-            % Create Table Titles
-            title = ['Chain ID  ';'Sequence #';'Angle     '];
-            %Combines function data witl table titles
-            celltitle = transpose(cellstr(title));
-            dataToWrite = vertcat(celltitle, result);
-            %Creat tabe name as protein - Residue
-            tabName=strcat(current_proteine, ' - ',curr_res);
-            %Writes Data (only works if excel is available atm)
-            xlswrite('Angles',dataToWrite,tabName{1});
-        end
-    end
-    f = figure;
-    figures = [figures f];
-    for i = 1:size(result,1)
-        if(result(i,3) > 90)
-            result(i,3) = 180-result(i,3);
-        end    
-    end
-    
-    
-%end
-%savefig(figures,'figures.fig')

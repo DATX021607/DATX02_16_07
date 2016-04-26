@@ -15,8 +15,9 @@
 %[coords]=CoordsGenerator(gfl)
 %PlotAxis(x0, a, coords)
 %-------------------------------
-useBeta = 1;
-usePlanes = 1;
+steric = 0;
+useBeta = 0;
+usePlanes = 0;
 stericZipper = 0;
 XRestraint = 4.5;
 YRestraint = 4;
@@ -28,36 +29,43 @@ coordinatesArray = {};
 normalsJan = [];
 vectors = [];
 %proteins = ['2LMQ'; '2LMP'; '2LMO'; '2LMN'; '2M4J']
-
+%Problematiska Zippers : '3NVG';'3NVH';'4XFN';'3LOZ'
+stericZippers = {'4ZNN';'3NHC';'3NHD';'4R0P';'3NVF';'3OW9';'3LOZ';'2OMP';'3NVE';'3FVA';'3FTL';'2OMQ';'4NP8';'4ONK';'4OLR'};
 %'2LMN' : Måste ha max 1 i y-diff för att inte ta fel kopplingar
 %'2N1E'; '2LNQ'; '2BEG'; '2LMN'
-proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX'; '2KIB';'2N1E';'2M5N';'2NLQ']
-%for p = 1:length(proteins)
-    current_proteine = '2LMN'
-    %current_proteine = proteins(p,:);
+
+%proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX';'2KIB';'2N1E';'2M5N';'2NLQ';'2NNT';'4XFN';'4ZNN';'3NHC';'3NHD';'4R0P';'3NVF';'3OW9';'3LOZ';'2OMP';'3NVE';'3FVA';'3FTL';'2OMQ';'4NP8';'4ONK';'4OLR']
+%endast zippers 
+proteins = ['4ZNN';'3NHC';'3NHD';'4ROP';'3NVF';'3OW9';'2OMP';'3NVE';'3FVA';'3FTL';'2OMQ';'4NP8';'4ONK';'4OLR'];
+for p = 1:length(proteins)
+    %current_proteine = '2LMN'
+    current_proteine = proteins(p,:);
     %Check if the current protein is already scanned into matlab
     %If yes then skip this part
     %if((strcmp({gfl.Header.idCode},current_proteine)) == 0) 
-     filename = strcat(current_proteine, '.pdb');
-        if isempty(dir(filename)) == 1 
-            test = 0
-            gfl = getpdb(current_proteine,'ToFile',filename);
-        else
-            gfl = pdbread(filename);
-        end
-       % BetaSolenoid(gfl)
+    filename = strcat(current_proteine, '.pdb');
+    gfl = pdbread(filename);
+        
+    % BetaSolenoid(gfl)
     %end
    
     atom_name='CA';
+    if any(ismember(stericZippers, current_proteine)) == 1
+        steric = 1;
+    else
+
+        steric = 0;
+    end
     if ((strcmp(current_proteine, '2KIB') == 1))
         res_name_axis = 'ILE';
         YRestraint = 15;
         ZHighRestraint = 9;
         ZLowRestraint = 0;
         XRestraint = 8;
-    %elseif (strcmp(current_proteine, '2NNT') == 1)
-    %   res_name_axis = 'ASN';
-    %  usePlanes = 1;
+        useBeta = 1;
+    elseif (strcmp(current_proteine, '2NNT') == 1)
+       res_name_axis = 'THR';
+       %usePlanes = 1;
     elseif (strcmp(current_proteine, '2N1E') == 1)
         res_name_axis = 'VAL'
         YRestraint = 15;
@@ -106,7 +114,10 @@ proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX'; '2KIB';'2N1E';'2M5
         normalT = transpose(normal);
         normalsJan = [normalsJan;normalT];
     end
-    
+    if steric == 1
+       Restraints = [XRestraint, YRestraint, ZLowRestraint, ZHighRestraint];
+       [normal, f] = StericZippers(gfl, Restraints, current_proteine);
+    else
         %Generating Coords from gfl 
         coords=CoordsGenerator(gfl, pos);
         %Create the list of arrays containing the stacks
@@ -119,7 +130,7 @@ proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX'; '2KIB';'2N1E';'2M5
 
 
         [normal] = manylines(coordinatesArray, gfl);
-
+    end
         vectors = [vectors;normal];
 
         figures = [figures f];
@@ -128,7 +139,8 @@ proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';'2MXU';'2MPZ';'2MVX'; '2KIB';'2N1E';'2M5
         YRestraint = 4;
         ZLowRestraint = 1.5;
         ZHighRestraint = 15;
-%end
+
+end
 savefig(figures,'figures.fig')
  %%   %-------------------------------------------------------------
         %FOR PRINTING
