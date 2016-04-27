@@ -8,7 +8,13 @@ function[point1,finishedvector] = StericZippers(gfl, Restraints, current_protein
 % Generate a PDB file (example from MatLab help)
 % gfl = getpdb('1GFL','TOFILE','1gfl.pdb')
 % Read the PDB file
-% Which static zippers use what Amino Acid
+% Which steric zippers use what Amino Acid
+
+% Steric Zippers and which way they grow
+% X: 4OLR, 4ONK, 3NVE, 2OMP
+% Y: 4NP8, 2OMQ, 3FTL, 3FVA, 3OW9, 3NHC, 4ZNN, 4R0P
+% Z: 3NVF, 3NHD
+
 ValSteric = {'4XFN';'4ZNN';'4NP8';'4ONK';'4OLR'};
 GlySteric = {'3NHC';'3NHD'};
 IleSteric = {'4R0P';'3NVF'};
@@ -18,13 +24,23 @@ PheSteric = {'3OW9'};
 SerSteric = {'3LOZ'};
 MetSteric = {'3NVE'};
 
+XSteric = {'4OLR';'4ONK';'3NVE';'2OMP'};
+YSteric = {'4NP8';'2OMQ';'3FTL';'3FVA';'3OW9';'3NHC';'4ZNN';'4R0P'};
+ZSteric = {'3NVF';'3NHD'};
+
 figures = [];
 coordinatesArray = {};
 normalsJan = [];
 vectors = [];
 atom_name='CA';   
 
-
+if any(ismember(XSteric, current_proteine)) == 1
+    Restraints = [15 1.5 0 1.5];
+elseif any(ismember(YSteric, current_proteine)) == 1
+    Restraints = [1.5 15 0 1.5];
+elseif any(ismember(ZSteric, current_proteine)) == 1
+    Restraints = [1.5 1.5 1.5 15];
+end
 if  any(ismember(ValSteric, current_proteine)) == 1
     res_name_axis ='VAL';
 elseif any(ismember(GlySteric, current_proteine)) == 1

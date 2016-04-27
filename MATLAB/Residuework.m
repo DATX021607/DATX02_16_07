@@ -5,6 +5,11 @@
 % [coords]=CoordsGenerator(gfl)
 % PlotAxis(x0, a, gfl,  coords)
 %-------------------------------
+% Steric Zippers and which way they grow
+% X: 4OLR, 4ONK, 3NVE, 2OMP
+% Y: 4NP8, 2OMQ, 3FTL, 3FVA, 3OW9, 3NHC, 4ZNN, 4R0P
+% Z: 3NVF, 3NHD
+%-------------------------------
 % Initiate variables
 figures = [];
 coordinatesArray = {};
@@ -35,13 +40,13 @@ stericZippers = {'4ZNN';'3NHC';'3NHD';'4R0P';
                  '3NVE';'3FVA';'3FTL';'2OMQ';
                  '4NP8';'4ONK';'4OLR'};
 %'2LMN' : Måste ha max 1 i y-diff för att inte ta fel kopplingar
-%'2N1E'; '2LNQ'; '2BEG'; '2LMN'
+%'2N1E'; '2LNQ'; '2BEG'; '2LMN' ;'3LOZ'
 
 proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';
             '2MXU';'2MPZ';'2MVX';'2KIB';
-            '2N1E';'2M5N';'2NLQ';'2NNT';
-            '4XFN';'4ZNN';'3NHC';'3NHD';
-            '4R0P';'3NVF';'3OW9';'3LOZ';
+            '2N1E';'2M5N';'2LNQ';'2NNT';
+            '4ZNN';'3NHC';'3NHD';
+            '4R0P';'3NVF';'3OW9';
             '2OMP';'3NVE';'3FVA';'3FTL';
             '2OMQ';'4NP8';'4ONK';'4OLR'];
 %endast zippers 
@@ -53,7 +58,7 @@ planeofBestFit = ['2E8D';'2MVX';'2MPZ';'2LMP';
 % Use Line of best fit
 lineofBestFit  = ['2N1E';'2KIB';'2MXU';'2RNM'];
 % Use Stack as Axis
-stackAsAxis    = ['2MXU';'2BEG';'2M5N';'2LNQ'];
+stackAsAxis    = ['2MXU';'2BEG';'2M5N';'2LNQ';'2NNT'];
 % Is Beta Solenoid
 betaSolenoid = ['4S37';'2N3D';'4IHG';'1TYU'];
 % Tell program to use Alpha Carbon atoms in calculations.
@@ -79,7 +84,7 @@ for p = 1:length(proteins)
     % Check if the current proteine is a Steric zipper, if yes use pdb1
     % , i.e. Biological assembly. Also set Steric to 1.
     if ismember(current_proteine,stericZippers)
-        filename = strcat(current_proteine, '.pdb1');
+        filename = strcat(current_proteine, '.pdb');
         gfl = pdbread(filename);
         steric = 1;
     else
@@ -92,19 +97,21 @@ for p = 1:length(proteins)
         end
         steric = 0;
     end
-    % If member of lineofBestFit use Line of Best Fit method
-    if ismember(current_proteine,lineofBestFit,'rows') || ismember(current_proteine,betaSolenoid,'rows')
-        useLine = 1;
-    % If member of planeofBestFit use Plane of Best Fit method
-    elseif ismember(current_proteine,planeofBestFit,'rows')
-        usePlane = 1;
-    % If member of stackASAxis use stackAsAxis Fit method
-    elseif ismember(current_proteine,stackAsAxis,'rows')
-        useStackAxis = 1;
-    % If not member of any of these arrays, break and tell user to
-    % specify method
-    elseif useLine ~= 1 || usePlane ~= 1 || useStackAxis ~=1
-        error('Unclassefied protine, please specify method') 
+    if steric ~= 1
+        % If member of lineofBestFit use Line of Best Fit method
+        if ismember(current_proteine,lineofBestFit,'rows') || ismember(current_proteine,betaSolenoid,'rows')
+            useLine = 1;
+        % If member of planeofBestFit use Plane of Best Fit method
+        elseif ismember(current_proteine,planeofBestFit,'rows')
+            usePlane = 1;
+        % If member of stackASAxis use stackAsAxis Fit method
+        elseif ismember(current_proteine,stackAsAxis,'rows')
+            useStackAxis = 1;
+        % If not member of any of these arrays, break and tell user to
+        % specify method
+        elseif useLine ~= 1 || usePlane ~= 1 || useStackAxis ~=1
+            error('Unclassefied protine, please specify method') 
+        end
     end
     
     % Protein specific constraints
@@ -189,11 +196,14 @@ for p = 1:length(proteins)
             [x0,normal] = stackAsAxisFunc(coordinatesArray, gfl, printAxis);
         end
     end
+    if strcmp(current_proteine, '2M5N') || strcmp(current_proteine,'2LNQ') || strcmp(current_proteine, '2NNT')
+        normal = transpose(normal);
+    end
         vectors = [vectors;normal];
 
         figures = [figures f];
         hold off;
-end
+
 %% 
         % FOR PRINTING
         hold on
@@ -218,3 +228,4 @@ end
         end
     end
     figures = [figures f];
+end
