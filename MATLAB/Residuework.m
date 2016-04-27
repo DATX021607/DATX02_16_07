@@ -31,6 +31,7 @@ XRestraint = 4.5;
 YRestraint = 4;
 ZLowRestraint = 1.5;
 ZHighRestraint = 15;
+normalsJan=[];
 %-------------------------------
 % Protein to be used
 % proteins = ['2LMQ'; '2LMP'; '2LMO'; '2LMN'; '2M4J']
@@ -41,7 +42,7 @@ stericZippers = {'4ZNN';'3NHC';'3NHD';'4R0P';
                  '4NP8';'4ONK';'4OLR'};
 %'2LMN' : Måste ha max 1 i y-diff för att inte ta fel kopplingar
 %'2N1E'; '2LNQ'; '2BEG'; '2LMN' ;'3LOZ'
-
+%{
 proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';
             '2MXU';'2MPZ';'2MVX';'2KIB';
             '2N1E';'2M5N';'2LNQ';'2NNT';
@@ -49,8 +50,9 @@ proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';
             '4R0P';'3NVF';'3OW9';
             '2OMP';'3NVE';'3FVA';'3FTL';
             '2OMQ';'4NP8';'4ONK';'4OLR'];
+%}
 %endast zippers 
-%proteins = ['4ZNN';'3NHC';'3NHD';'4R0P';'3NVF';'3OW9';'2OMP';'3NVE';'3FVA';'3FTL';'2OMQ';'4NP8';'4ONK';'4OLR'];
+proteins = ['4ZNN';'3NHC';'3NHD';'4R0P';'3NVF';'3OW9';'2OMP';'3NVE';'3FVA';'3FTL';'2OMQ';'4NP8';'4ONK';'4OLR'];
 % Configuration regarding which method to use
 % Use Plane of best fit
 planeofBestFit = ['2E8D';'2MVX';'2MPZ';'2LMP';
@@ -69,9 +71,9 @@ for p = 1:length(proteins)
     %------------------
     % Reset flags
     steric = 0;
-    useLine      = 0;
-    usePlane    = 0;
-    useStackAxis = 0;
+    useLine      = 1;
+    usePlane     = 1;
+    useStackAxis = 1;
     %------------------
     % Reset Constraints
     XRestraint = 4.5;
@@ -84,7 +86,7 @@ for p = 1:length(proteins)
     % Check if the current proteine is a Steric zipper, if yes use pdb1
     % , i.e. Biological assembly. Also set Steric to 1.
     if ismember(current_proteine,stericZippers)
-        filename = strcat(current_proteine, '.pdb');
+        filename = strcat(current_proteine, '.pdb1');
         gfl = pdbread(filename);
         steric = 1;
     else
