@@ -42,7 +42,7 @@ stericZippers = {'4ZNN';'3NHC';'3NHD';'4R0P';
                  '4NP8';'4ONK';'4OLR'};
 %'2LMN' : Måste ha max 1 i y-diff för att inte ta fel kopplingar
 %'2N1E'; '2LNQ'; '2BEG'; '2LMN' ;'3LOZ'
-%{
+
 proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';
             '2MXU';'2MPZ';'2MVX';'2KIB';
             '2N1E';'2M5N';'2LNQ';'2NNT';
@@ -50,9 +50,9 @@ proteins = ['2LMP';'2KJ3';'2LMQ';'2M4J';
             '4R0P';'3NVF';'3OW9';
             '2OMP';'3NVE';'3FVA';'3FTL';
             '2OMQ';'4NP8';'4ONK';'4OLR'];
-%}
+
 %endast zippers 
-proteins = ['4ZNN';'3NHC';'3NHD';'4R0P';'3NVF';'3OW9';'2OMP';'3NVE';'3FVA';'3FTL';'2OMQ';'4NP8';'4ONK';'4OLR'];
+%proteins = ['4ZNN';'3NHC';'3NHD';'4R0P';'3NVF';'3OW9';'2OMP';'3NVE';'3FVA';'3FTL';'2OMQ';'4NP8';'4ONK';'4OLR'];
 % Configuration regarding which method to use
 % Use Plane of best fit
 planeofBestFit = ['2E8D';'2MVX';'2MPZ';'2LMP';
@@ -71,14 +71,15 @@ for p = 1:length(proteins)
     %------------------
     % Reset flags
     steric = 0;
-    useLine      = 1;
-    usePlane     = 1;
-    useStackAxis = 1;
+    useLine      = 0;
+    usePlane     = 0;
+    useStackAxis = 0;
+    stericyn     = 'NotSteric';
     %------------------
     % Reset Constraints
-    XRestraint = 4.5;
-    YRestraint = 4;
-    ZLowRestraint = 1.5;
+    XRestraint     = 4.5;
+    YRestraint     = 4;
+    ZLowRestraint  = 1.5;
     ZHighRestraint = 15;
     %------------------
     %Crashade på 2M5N, kollar varför
@@ -89,6 +90,7 @@ for p = 1:length(proteins)
         filename = strcat(current_proteine, '.pdb1');
         gfl = pdbread(filename);
         steric = 1;
+        useStackAxis = 1;
     else
         % Check if .pdb exist, otherwise fetch it. Sets Steric to 0.
         filename = strcat(current_proteine, '.pdb');
@@ -171,22 +173,28 @@ for p = 1:length(proteins)
     % Use Line of best Fit method
     if useLine == 1
         [dontcare, normal] = LineBestFit(gfl, printAxis);
-        normalT = transpose(normal);
-        normal = [normalsJan;normalT];
+        normalT            = transpose(normal);
+        normal             = [normalsJan;normalT];
+        methodused         = 'Line Best';
+        
     end
     % Use Plane of best Fit method
     if usePlane == 1
         [dontcare, normal] = PlaneBestFit(gfl,printAxis);
-        normalT = transpose(normal);
-        normal = [normalsJan;normalT];
+        normalT            = transpose(normal);
+        normal             = [normalsJan;normalT];
+        methodused         = 'PlaneBest';
+        
     end
     % Use Stack as Axis method
     if useStackAxis == 1
+        methodused         = 'StackAsAx';
         if steric == 1
            % Apply Special Restraints
            Restraints = [XRestraint, YRestraint, ZLowRestraint, ZHighRestraint];
            % Call function StericZippers to calculate normal
            [x0,normal] = StericZippers(gfl, Restraints, current_proteine, printAxis);
+           stericyn     = 'Steric   ';
            
         else
             % Generating Coords from gfl 
@@ -215,17 +223,20 @@ for p = 1:length(proteins)
         % Result is Cell matrix with ChainID : Angle
         result = [result AromaticRings(curr_res, gfl, normal ,steric, current_proteine, printAromatic) ];
         if (length(result)>0)
-            %FOR PRINTING
+            % FOR PRINTING
             % Data extracion
             % Create Table Titles
             % Leave the padding
-            title = ['Chain ID  ';'Sequence #';'Angle     '];
-            %Combines function data witl table titles
-            celltitle = transpose(cellstr(title));
-            dataToWrite = vertcat(celltitle, result);
-            %Creat tabe name as protein - Residue
             tabName=strcat(current_proteine, ' - ',curr_res);
-            %Writes Data (only works if excel is available atm)
+            proteininfo = [tabName;methodused;stericyn];           
+            title = ['Chain ID ';'Sequence#';'Angle    '];
+            % Combines function data witl table titles
+            celltitle   = transpose(cellstr(title));
+            cellProtein = transpose(cellstr(proteininfo));
+            dataToWrite = vertcat(celltitle, result);
+            dataToWrite = vertcat(cellProtein, dataToWrite);
+            % Creat tabe name as protein - Residue
+            % Writes Data (only works if excel is available atm)
             xlswrite('Angles',dataToWrite,tabName{1});
         end
     end
