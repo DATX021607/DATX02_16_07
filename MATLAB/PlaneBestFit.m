@@ -13,7 +13,7 @@ coords=CoordsGenerator(gfl, 0);
 point = transpose(x0);
 direction = transpose(a);
 %Plot Axis (Optional)
-PlotAxis(point, direction, gfl, coords,printAxis)
+PlotAxis(point, direction, gfl, coords,'blue', printAxis)
 %Assign final values
 
 %End

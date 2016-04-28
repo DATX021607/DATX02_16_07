@@ -19,5 +19,5 @@ hold on;
 point = transpose(x0);
 direction = transpose(a);
 %Plot Axis (Optional)
-PlotAxis(point, direction, gfl, coords,printAxis)
+PlotAxis(point, direction, gfl, coords,'magenta',printAxis)
 %End

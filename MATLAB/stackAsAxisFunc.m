@@ -36,8 +36,7 @@ function[point1, finishedvector]  = stackAsAxisFunc(coordinatesArray, gfl,printA
     meanvectorZ = mean(vectorsZ)
 
     finishedvector = [meanvectorX meanvectorY meanvectorZ]
-
-    PlotAxis(point1,finishedvector,gfl,0,printAxis);
+    PlotAxis(point1,finishedvector,gfl,0,'green',printAxis);
 
 
 

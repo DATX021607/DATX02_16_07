@@ -11,27 +11,28 @@
 % Z: 3NVF, 3NHD
 %-------------------------------
 % Initiate variables
-figures = [];
-coordinatesArray = {};
-normal= [];
-vectors = [];
+figures                 = [];
+coordinatesArray        = {};
+normal                  = [];
+vectors                 = [];
+proteinsThatDoesNotWork = [];
+normalsJan              = [];
 %-------------------------------
 % Initiate Flags
 steric       = 0;
 useLine      = 0;
-usePlane    = 0;
+usePlane     = 0;
 useStackAxis = 0;
 %-------------------------------
 %Print figures for 
 printAromatic = 0;
-printAxis = 1;
+printAxis     = 1;
 %-------------------------------
 % Default constraints for Stack as Axis methd
-XRestraint = 4.5;
-YRestraint = 4;
-ZLowRestraint = 1.5;
+XRestraint     = 4.5;
+YRestraint     = 4;
+ZLowRestraint  = 1.5;
 ZHighRestraint = 15;
-normalsJan=[];
 %-------------------------------
 % Protein to be used
 % proteins = ['2LMQ'; '2LMP'; '2LMO'; '2LMN'; '2M4J']
@@ -173,16 +174,12 @@ for p = 1:length(proteins)
     % Use Line of best Fit method
     if useLine == 1
         [dontcare, normal] = LineBestFit(gfl, printAxis);
-        normalT            = transpose(normal);
-        normal             = [normalsJan;normalT];
         methodused         = 'Line Best';
         
     end
     % Use Plane of best Fit method
     if usePlane == 1
         [dontcare, normal] = PlaneBestFit(gfl,printAxis);
-        normalT            = transpose(normal);
-        normal             = [normalsJan;normalT];
         methodused         = 'PlaneBest';
         
     end
@@ -206,9 +203,10 @@ for p = 1:length(proteins)
             [x0,normal] = stackAsAxisFunc(coordinatesArray, gfl, printAxis);
         end
     end
-    if strcmp(current_proteine, '2M5N') || strcmp(current_proteine,'2LNQ') || strcmp(current_proteine, '2NNT')
-        normal = transpose(normal);
-    end
+%    transposeNormalof = ['2M5N';'2LNQ';'2NNT';'4ZNN'];
+  %  if ismember(current_proteine,transposeNormalof,'rows')
+ %       normal = transpose(normal);
+  %  end
         vectors = [vectors;normal];
 
         figures = [figures f];
@@ -222,7 +220,9 @@ for p = 1:length(proteins)
         result = [];
         % Result is Cell matrix with ChainID : Angle
         result = [result AromaticRings(curr_res, gfl, normal ,steric, current_proteine, printAromatic) ];
-        if (length(result)>0)
+        if normal == [0,0,0]
+            proteinsThatDoesNotWork = [proteinsThatDoesNotWork; current_proteine];
+        else
             % FOR PRINTING
             % Data extracion
             % Create Table Titles
@@ -242,3 +242,4 @@ for p = 1:length(proteins)
     end
     figures = [figures f];
 end
+proteinsThatDoesNotWork = unique(proteinsThatDoesNotWork,'rows')

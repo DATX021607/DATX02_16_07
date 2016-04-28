@@ -124,7 +124,6 @@ meanvectorY = mean(vectorsY);
 meanvectorZ = mean(vectorsZ);
 
 finishedvector = [meanvectorX meanvectorY meanvectorZ];
-vectors = [vectors; finishedvector];
-
-PlotAxis(point1,finishedvector,gfl,0,printAxis);
+%vectors = [vectors; finishedvector];
+PlotAxis(point1,finishedvector,gfl,0,'green',printAxis);
 %end
